@@ -1,0 +1,4 @@
+numba
+faiss-gpu
+numpy
+scipy
