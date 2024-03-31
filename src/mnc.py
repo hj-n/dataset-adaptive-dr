@@ -34,7 +34,7 @@ def mutual_neighbor_consistency(data, k):
 		cos_sim = np.dot(knn_sim, snn_sim) / (np.linalg.norm(knn_sim) * np.linalg.norm(snn_sim))
 		neighbor_consistency_sum += cos_sim
 	
-	neighbor_consistency = neighbor_consistency_sum / data.shape[0]
+	neighbor_consistency = 1 - neighbor_consistency_sum / data.shape[0]
 
 	return neighbor_consistency
 	
