@@ -8,7 +8,12 @@ def pairwise_distnace_shift(data):
 	"""
 	Pairwise distance shift: complexity metric targetting global structure
 	
-	### TODO ###
+	INPUT:
+	- data: numpy array of shape (n_samples, n_features) representing the high-dimensional data
+
+	OUTPUT:
+	- float: pairwise distance shift value
+
 
 	"""
 	dist_matrix = DistMat().distance_matrix(data)

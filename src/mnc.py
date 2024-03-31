@@ -5,7 +5,12 @@ def mutual_neighbor_consistency(data, k):
 	"""
 	Mutual Neighbor Consistency: complexity metric targetting local structure
 	
-	### TODO ###
+	INPUT:
+	- data: numpy array of shape (n_samples, n_features) representing the high-dimensional data
+	- k: int, number of nearest neighbors to consider for computing mutual neighbor consistency
+
+	OUTPUT:
+	- float: mutual neighbor consistency value
 
 	"""
 	kSnn = ks(k)
