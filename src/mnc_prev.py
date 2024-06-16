@@ -23,7 +23,7 @@ def mutual_neighbor_consistency(data, k):
 
 	for i in range(data.shape[0]):
 		for j in range(k):
-			knn_distances[i, knn_indices[i, j]] = 1
+			knn_distances[i, knn_indices[i, j]] = (k - j) / k
 	
 	neighbor_consistency_sum = 0
 	for i in range(data.shape[0]):

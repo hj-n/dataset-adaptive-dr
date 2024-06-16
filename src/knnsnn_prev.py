@@ -12,6 +12,7 @@ def distance_matrix_cuda(data, dist_matrix, length):
 	length = length[0]
 
 	if i >= length or j >= length:
+		dist_matrix[i, j] = -100
 		return
 	if i >= j:
 		dist_matrix[i, j] = -100
