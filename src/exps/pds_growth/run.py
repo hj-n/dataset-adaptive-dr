@@ -1,5 +1,5 @@
 import numpy as np 
-from .helpers import generate_gaussian
+from ..helpers import generate_gaussian
 from ...pds import pairwise_distance_shift
 from tqdm import tqdm
 
@@ -34,6 +34,8 @@ else:
 	})
 
 	## save the data
+
+	
 
 	df.to_csv('./src/exps/pds_growth/data/pds_growth.csv', index=False)
 

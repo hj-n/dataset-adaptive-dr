@@ -1,4 +1,4 @@
-from knnsnn import KnnSnn as ks
+from .knnsnn import KnnSnn as ks
 import numpy as np
 
 def mutual_neighbor_consistency(data, k):
@@ -16,27 +16,32 @@ def mutual_neighbor_consistency(data, k):
 	kSnn = ks(k)
 
 	knn_indices = kSnn.knn(data)
-	snn_results = kSnn.snn(knn_indices)
+	snn_matrix = kSnn.snn(knn_indices)
 
 	## convert knn indices to knn distance matrix
-	knn_distances = np.zeros((data.shape[0], data.shape[0]))
+	knn_matrix = np.zeros((data.shape[0], data.shape[0]))
+
+	
 
 	for i in range(data.shape[0]):
 		for j in range(k):
-			knn_distances[i, knn_indices[i, j]] = 1
+			knn_matrix[i, knn_indices[i, j]] = 1
 	
-	neighbor_consistency_sum = 0
-	for i in range(data.shape[0]):
-		knn_sim = knn_distances[i, :]
-		snn_sim = snn_results[i, :]
-
-		## compute neighbor consistency as cosine similarity
-		cos_sim = np.dot(knn_sim, snn_sim) / (np.linalg.norm(knn_sim) * np.linalg.norm(snn_sim))
-		neighbor_consistency_sum += cos_sim
+	# for i in range(data.shape[0]):
+	# 	for j in range(data.shape[0]):
+	# 		if snn_matrix[i, j] == 1:
+	# 			print(i, j)
+	# 			print(knn_indices[i, :])
+	# 			print(knn_indices[j, :])
+	# 			print()
 	
-	neighbor_consistency = 1 - neighbor_consistency_sum / data.shape[0]
+	# print((k ** 2) / data.shape[0])
+	# print((np.sum(snn_matrix)/2) /  (data.shape[0] * (data.shape[0] - 1) / 2))
+	consistency = snn_matrix * knn_matrix
 
-	return neighbor_consistency
+	# print(np.mean(consistency))
+
+	return np.mean(consistency)
 	
 
 	
