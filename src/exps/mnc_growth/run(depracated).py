@@ -17,18 +17,13 @@ if os.path.exists('./src/exps/mnc_growth/data/mnc_growth.csv' ) and False:
 
 else:
 
-## make the features to have integer value between 1 and 10000 following log scale (bigger, more sparse)
-	# n_samples_list = [200, 500, 1000, 2000, 5000, 10000, 15000, 20000]
-	# k_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 50, 60, 70]
-	# k_list = [2, 3, 4, 5]
-	# n_sample_list = 
 	mnc_score_list = []
 	n_samples_final_list = []
 	cons_final_list = []
 
-	n_sample_list = [1000, 2000, 3000, 4000, 5000, 6000] 
+	n_sample_list = [1000, 2000, 3000, 4000, 5000] 
 	
-	constant_list = [1000, 10000, 100000]
+	constant_list = [1000, 5000, 25000, 125000]
 	for n_samples in tqdm(n_sample_list):
 		n_feature = 1000
 		for cons in tqdm(constant_list):
@@ -67,6 +62,8 @@ cons_final_list = np.array(cons_final_list)
 n_samples_final_list = np.array(n_samples_final_list)
 
 mnc_score_list = np.log10(mnc_score_list)
+mnc_score_list = mnc_score_list / np.log10(5)
+
 n_samples_final_list = n_samples_final_list
 # n_features_final_list
 
