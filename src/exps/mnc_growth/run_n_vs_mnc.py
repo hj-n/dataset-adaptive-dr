@@ -1,6 +1,6 @@
 import numpy as np
 from ..helpers import generate_gaussian
-from ...mnc import mutual_neighbor_consistency
+from ...naive_mnc import mutual_neighbor_consistency
 from tqdm import tqdm
 
 import seaborn as sns 
@@ -24,7 +24,7 @@ else:
 	k_option_final_list = []
 
 	# n_sample_list = np.arange(1000, 10000, 200)
-	n_sample_list = np.logspace(3.48, 4.48, num=60, base=10).astype(int)
+	n_sample_list = np.logspace(3.48, 4.48, num=500, base=10).astype(int)
 	k_option = ["fixed", "n^(2/3)", "n"]
 
 	for n_sample in tqdm(n_sample_list):

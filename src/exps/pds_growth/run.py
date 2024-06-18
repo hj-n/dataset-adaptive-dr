@@ -17,7 +17,7 @@ if os.path.exists('./src/exps/pds_growth/data/pds_growth.csv') and False:
 else:
 
 ## make the features to have integer value between 1 and 10000 following log scale (bigger, more sparse)
-	n_features_list = np.logspace(1, 3, num=300, base=10).astype(int)
+	n_features_list = np.logspace(1, 3, num=500, base=10).astype(int)
 
 	pds_score_list = []
 	std_list = []
