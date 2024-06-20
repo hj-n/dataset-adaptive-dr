@@ -80,5 +80,53 @@ sns.scatterplot(
 plt.savefig('./src/exps/mnc_growth/figures/mnc_growth_vs_d.png')
 
 
+# min_mnc = {
+# 	5: np.min(mnc_score_list[k_final_list == 5]),
+# 	10: np.min(mnc_score_list[k_final_list == 10]),
+# 	15: np.min(mnc_score_list[k_final_list == 15])
+# }
 
-	
+
+# mnc_truncated = []
+# for i, mnc_score in enumerate(mnc_score_list):
+# 	if k_final_list[i] == 5:
+# 		mnc_truncated.append(mnc_score - min_mnc[5])
+# 	elif k_final_list[i] == 10:
+# 		mnc_truncated.append(mnc_score - min_mnc[10])
+# 	else:
+# 		mnc_truncated.append(mnc_score - min_mnc[15])
+
+
+# mnc_truncated = np.array(mnc_truncated)
+
+
+
+
+
+# mnc_truncated = mnc_truncated[k_final_list == 5]
+# d_final_list = d_final_list[k_final_list == 5]
+# k_final_list = k_final_list[k_final_list == 5]
+
+# mnc_truncated = -np.log(mnc_truncated)
+# d_final_list = np.log(d_final_list)
+
+
+# # mnc_truncated = np.log(mnc_truncated)
+
+# # d_final_list = np.log(d_final_list)
+
+# plt.clf()
+
+# plt.figure(figsize=(10, 6))
+
+# sns.scatterplot(
+# 	x=d_final_list,
+# 	y=mnc_truncated,
+# 	hue=k_final_list,
+# 	palette='tab10',
+# 	alpha=0.2,
+# 	linewidth=0,
+# 	s=50
+# )
+
+# plt.savefig('./src/exps/mnc_growth/figures/mnc_growth_trunc_vs_d.png')
