@@ -1,6 +1,6 @@
 import numpy as np 
 from ..helpers import generate_gaussian
-from ...naive_mnc import mutual_neighbor_consistency
+from ...mnc import mutual_neighbor_consistency
 from tqdm import tqdm
 
 import seaborn as sns 
@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os
 
-if os.path.exists('./src/exps/mnc_growth/data/mnc_growth_vs_d.csv' ):
+if os.path.exists('./src/exps/mnc_growth/data/mnc_growth_vs_d.csv' ) and False:
 	df = pd.read_csv('./src/exps/mnc_growth/data/mnc_growth_vs_d.csv')
 	d_final_list = df['d'].values
 	mnc_score_list = df['mnc_score'].values
@@ -21,20 +21,49 @@ else:
 	d_final_list = []
 	k_final_list = []
 
-	d_list = np.arange(2, 1002, 2)
+	d_list = np.arange(2, 100, 1)
 
-	k_option_list = [5, 10, 15]
+	k_option_list = ["5", "50", "100"]
 	n_sample = 3000
 
 	for d in tqdm(d_list):
-		for k in k_option_list:
-			data = generate_gaussian(d, n_sample)
+		for k_strat in k_option_list:
+			if k_strat == "5":
+				k = 5
+			elif k_strat == "50":
+				k = 50
+			elif k_strat == "100":
+				k = 100
+			
+			k = int(k)
+
+			pdf = np.zeros(10000)
+			Gaussian_n = np.random.randint(1, 100)
+			for i in range(Gaussian_n):
+				mean = np.random.randint(1, 10000)
+				## make std range from 0 to 2000
+				std = np.random.randint(1, 2000)
+				height = np.random.randint(1, 1000)
+
+				pdf += height * np.exp(-((np.arange(10000) - mean) ** 2) / (2 * std ** 2))
+			
+			## make the sum of pdf to be 1
+			pdf = pdf / np.sum(pdf)
+
+
+			## make data to follow a distribution where each dimension follows pdf (so every dimension follows same pdf)
+
+			data = np.zeros((n_sample, d))
+			for i in range(d):
+				data[:, i] = np.random.choice(pdf, n_sample)
+
+			
 			mnc_score = mutual_neighbor_consistency(data, k)
 
 			mnc_score_list.append(mnc_score)
 			d_final_list.append(d)
 
-			k_final_list.append(k)
+			k_final_list.append(k_strat)
 
 	
 	df = pd.DataFrame({

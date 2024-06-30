@@ -12,7 +12,6 @@ def distance_matrix_cuda(data, dist_matrix, length):
 	length = length[0]
 
 	if i >= length or j >= length:
-		dist_matrix[i, j] = -100
 		return
 	if i >= j:
 		dist_matrix[i, j] = -100
@@ -38,13 +37,13 @@ def snn_cuda(raw_knn, snn_result, k_list, length_list):
 	if i == j:
 			snn_result[i, j] = 0
 			return
-	c = 0
+	c = -0.01
 	for m in range(k):
 			for n in range(k):
 					if raw_knn[i, m] == raw_knn[j,n]:
 							c += (k + 1 - m) * (k + 1 - n)
 
-	snn_result[i, j] = c
+	snn_result[i, j] = 1 if c > 0 else 0
 
 
 
@@ -89,7 +88,7 @@ class KnnSnn:
 
 		index = faiss.IndexFlatL2(data.shape[1])
 		index.add(data)
-
+		
 		_, indices = index.search(data, self.k + 1)
 		return indices[:, 1:]
 

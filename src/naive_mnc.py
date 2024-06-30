@@ -1,4 +1,4 @@
-from .knnsnn import KnnSnn as ks
+from .naive_knnsnn import KnnSnn as ks
 import numpy as np
 
 def mutual_neighbor_consistency(data, k):
@@ -37,11 +37,18 @@ def mutual_neighbor_consistency(data, k):
 	
 	# print((k ** 2) / data.shape[0])
 	# print((np.sum(snn_matrix)/2) /  (data.shape[0] * (data.shape[0] - 1) / 2))
-	consistency = snn_matrix * knn_matrix
+	neighbor_consistency_sum = 0
+	for i in range(data.shape[0]):
+		knn_sim = knn_matrix[i, :]
+		snn_sim = snn_matrix[i, :]
+
+		## compute neighbor consistency as cosine similarity
+		cos_sim = np.dot(knn_sim, snn_sim) / (np.linalg.norm(knn_sim) * np.linalg.norm(snn_sim))
+		neighbor_consistency_sum += cos_sim
 
 	# print(np.mean(consistency))
 
-	return np.mean(consistency)
+	return neighbor_consistency_sum / data.shape[0]
 	
 
 	
