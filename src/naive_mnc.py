@@ -20,23 +20,11 @@ def mutual_neighbor_consistency(data, k):
 
 	## convert knn indices to knn distance matrix
 	knn_matrix = np.zeros((data.shape[0], data.shape[0]))
-
 	
-
 	for i in range(data.shape[0]):
 		for j in range(k):
 			knn_matrix[i, knn_indices[i, j]] = 1
-	
-	# for i in range(data.shape[0]):
-	# 	for j in range(data.shape[0]):
-	# 		if snn_matrix[i, j] == 1:
-	# 			print(i, j)
-	# 			print(knn_indices[i, :])
-	# 			print(knn_indices[j, :])
-	# 			print()
-	
-	# print((k ** 2) / data.shape[0])
-	# print((np.sum(snn_matrix)/2) /  (data.shape[0] * (data.shape[0] - 1) / 2))
+
 	neighbor_consistency_sum = 0
 	for i in range(data.shape[0]):
 		knn_sim = knn_matrix[i, :]
