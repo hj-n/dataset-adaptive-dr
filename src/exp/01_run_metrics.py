@@ -55,7 +55,7 @@ def return_score_and_time(func, data):
 	start = time.time()
 	score = func(data)
 	end = time.time()
-	return score, end - start
+	return end - start, score
 
 
 for dataset in tqdm(DATASET_LIST):
@@ -104,11 +104,14 @@ for dataset in tqdm(DATASET_LIST):
 	
 
 def save_result(scores, times, path):
+	result = {}
+	for i in range(len(DATASET_LIST)):
+		result[DATASET_LIST[i]] = {
+			"score": scores[i],
+			"time": times[i]
+		}
 	with open(path, "w") as f:
-		json.dump({
-			"scores": scores,
-			"times": times
-		}, f)
+		json.dump(result, f)
 
 
 save_result(mnc_naive_25_scores, mnc_naive_25_times, "./exp/scores/reducibility/mnc_naive_25.json")
