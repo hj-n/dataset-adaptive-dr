@@ -12,7 +12,7 @@ def distance_matrix_cuda(data, dist_matrix, length):
 	length = length[0]
 
 	if i >= length or j >= length:
-		dist_matrix[i, j] = -100
+		# dist_matrix[i, j] = 
 		return
 	if i >= j:
 		dist_matrix[i, j] = -100
@@ -66,7 +66,10 @@ class DistMat:
 			data_global_mem, dist_matrix_global_mem, length_list_global_mem
 		)
 
+
 		dist_matrix = dist_matrix_global_mem.copy_to_host()
+
+
 		return dist_matrix
 		
 
