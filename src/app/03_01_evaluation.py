@@ -1,6 +1,7 @@
 import numpy as np
 import os, json
 from scipy.stats import spearmanr
+import pandas as pd
 
 DATASET_PATH = "../labeled-datasets/npy/"
 DATASET_LIST = os.listdir(DATASET_PATH)
@@ -24,7 +25,7 @@ with open("./exp/scores/reducibility/pds.json") as f:
 	PDS = json.load(f)
 
 PDS_DATASETS = list(PDS.keys())
-PDS_SCORES = [-PDS[dataset]["score"] for dataset in PDS_DATASETS]
+PDS_SCORES = [PDS[dataset]["score"] for dataset in PDS_DATASETS]
 
 sorter = np.argsort(PDS_SCORES)
 PDS_DATASETS = np.array(PDS_DATASETS)[sorter]
@@ -66,6 +67,14 @@ def extract_ranking(datasets, dr_metric):
 	return final_ranking
 
 
+
+## informations
+Pzero_correlations_list = []
+Pzero_metrics_list = []
+
+Pplusminus_correlations_list = []
+Pplusminus_metrics_list = []
+Pplusminus_pm_list = []
 
 
 for dr_metric in DR_METRICS:
@@ -111,5 +120,26 @@ for dr_metric in DR_METRICS:
 					spearmanr_plue_list.append(spearmanr_plus)
 					spearmanr_minus_list.append(spearmanr_minus)
 					spearmanr_zero_list.append(spearmanr_zero)
-		print(dr_metric, ranking_method)
-		print(np.mean(spearmanr_plue_list), np.mean(spearmanr_minus_list), np.mean(spearmanr_zero_list))
+		
+		Pzero_correlations_list += spearmanr_zero_list
+		Pzero_metrics_list += [dr_metric] * len(spearmanr_zero_list)
+
+		Pplusminus_correlations_list += spearmanr_plue_list + spearmanr_minus_list
+		Pplusminus_metrics_list += [dr_metric] * (len(spearmanr_plue_list) + len(spearmanr_minus_list))
+		Pplusminus_pm_list += ["plus"] * len(spearmanr_plue_list) + ["minus"] * len(spearmanr_minus_list)
+
+
+df_pplusminus = pd.DataFrame({
+	"metric": Pplusminus_metrics_list,
+	"correlation": Pplusminus_correlations_list,
+	"pm": Pplusminus_pm_list
+})
+
+df_pzero = pd.DataFrame({
+	"metric": Pzero_metrics_list,
+	"correlation": Pzero_correlations_list
+})
+
+df_pplusminus.to_csv("./app/results/exp2_pplusminus.csv", index=False)
+
+df_pzero.to_csv("./app/results/exp2_pzero.csv", index=False)
