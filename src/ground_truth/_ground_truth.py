@@ -117,6 +117,8 @@ def save_best_embedding_score_dict(method, measure, measure_names, params, ident
 		scores_dict[dataset] = {"score": score, "params": embeeding_params, "time": time_taken}
 
 	print("Saving scores to file...")
+	if not os.path.exists("./results"):
+		os.makedirs("./results")
 	with open(f"./results/{method}_{measure}_{identifier}.json", "w") as f:
 		json.dump(scores_dict, f)
 
@@ -126,7 +128,7 @@ dr_method = "pca"
 print(dr_method)
 
 save_best_embedding_score_dict(
-	dr_method, "mrre", ["mrre_false", "mrre_missing"], { "k": 25}, 25, True
+	dr_method, "mrre", ["mrre_false", "mrre_missing"], {"k": 25}, 25, True
 )
 save_best_embedding_score_dict(
 	dr_method, "l_tnc", ["label_trustworthiness", "label_continuity"], {}, 0, True

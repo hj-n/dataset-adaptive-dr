@@ -2,6 +2,9 @@ import numpy as np
 import os, json
 import time
 from tqdm import tqdm
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from reducibility.naive_mnc import mutual_neighbor_consistency as mnc_naive
 from reducibility.mnc import mutual_neighbor_consistency as mnc
