@@ -24,7 +24,6 @@ reducibility_list = {
 }
 
 spec = [{ "id": "tnc", "params": { "k": 25} }]
-zadu_obj = zadu.ZADU(spec, data)
 
 def extract_score(z_obj, embedding):
 	score_dict = z_obj.measure(embedding, labels)[0]

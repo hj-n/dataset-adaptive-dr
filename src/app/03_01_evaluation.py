@@ -36,7 +36,7 @@ PDS_SCORES = np.array(PDS_SCORES)[sorter]
 avg_ranking = []
 for dataset in DATASET_LIST:
 	mnc_50_rank = np.where(MNC_50_DATASETS == dataset)[0]
-	pds_rank = np.where(PDS_DATASETS == dataset)[0]
+	pds_rank = len(PDS_DATASETS) - np.where(PDS_DATASETS == dataset)[0]
 	avg_rank = np.mean([mnc_50_rank, pds_rank])
 	avg_ranking.append(avg_rank)
 
@@ -75,6 +75,7 @@ Pzero_metrics_list = []
 Pplusminus_correlations_list = []
 Pplusminus_metrics_list = []
 Pplusminus_pm_list = []
+Pplusminus_rankingby_list = []
 
 
 for dr_metric in DR_METRICS:
@@ -127,12 +128,14 @@ for dr_metric in DR_METRICS:
 		Pplusminus_correlations_list += spearmanr_plue_list + spearmanr_minus_list
 		Pplusminus_metrics_list += [dr_metric] * (len(spearmanr_plue_list) + len(spearmanr_minus_list))
 		Pplusminus_pm_list += ["plus"] * len(spearmanr_plue_list) + ["minus"] * len(spearmanr_minus_list)
+		Pplusminus_rankingby_list += [ranking_method] * (len(spearmanr_plue_list) + len(spearmanr_minus_list))
 
 
 df_pplusminus = pd.DataFrame({
 	"metric": Pplusminus_metrics_list,
 	"correlation": Pplusminus_correlations_list,
-	"pm": Pplusminus_pm_list
+	"pm": Pplusminus_pm_list,
+	"rankingby": Pplusminus_rankingby_list
 })
 
 df_pzero = pd.DataFrame({
