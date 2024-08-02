@@ -1,0 +1,6 @@
+auto-sklearn
+numpy==1.26.4
+bayesian-optimization==1.3.0
+umap-learn
+zadu
+umato
