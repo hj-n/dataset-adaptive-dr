@@ -1,81 +1,83 @@
-# Structural Complexity Metrics 
+<p align="center">
+  <h2 align="center">Structural-Reducibility</h2>
+	<p align="center">Repository for Measuring the Structural Reducibility of Datasets for Fast and Accurate Dimensionality Reduction</p>
+</p>
 
-## Introduction
-Structural Complexity Metrics is a tool that provides two efficient and accurate complexity metrics: Mutual Neighbor Consistency (MNC) and Pairwise Distance Shift (PDS). These metrics take arbitrary high-dimensional datasets as input and produce complexity scores that are comparable across datasets.
+---
 
-1. **Mutual Neighbor Consistency(MNC)**
-
-MNC measures the complexity of the local neighborhood structure by quantifying inconsistency between two different similarity functions—k-Nearest Neighbors (kNN) and Shared Nearest Neighbors (SNN). These functions have different granularity in examining the neighborhood structure.
-
-2. **Pairwise Distance Shift(PDS)**
-
-PDS quantifies how much the global structure of a given dataset suffers from the shift of distance, which is a widely known indicator of the curse of dimensionality.
-
-These two complexity metrics complement each other in comprehensively examining high-dimensional datasets. For more detailed information, please refer to the related academic papers: (paper link).
+Dimensionality reduction (DR) is essential for visualizing and analyzing high-dimensional (HD) datasets, yet obtaining accurate DR projections efficiently is challenging. Optimizing DR hyperparameters can be computationally intensive due to the difficulty in identifying the optimal number of iterations. Furthermore, the performance of DR techniques on benchmark datasets often does not generalize well to real-world datasets. To address these issues, we propose measuring the structural reducibility of HD datasets to inform DR optimization and benchmarking. We introduce two metrics—mutual neighbor consistency (MNC) and pairwise distance shift (PDS)—to quantify structural reducibility. These metrics accelerate DR optimization by guiding the number of iterations needed to reach the optima and improve the consistency of DR evaluation results across different datasets. Our experiments show that MNC and PDS are accurate and efficient, outperforming existing methods and addressing practical problems in DR optimization and evaluation.
 
 
-## API
-### `mutual_neighbor_consistency(data, k)`
+## Setup
 
-This function measures the Mutual Neighbor Consistency (MNC) of the given data.
+To set up the repository, follow these steps:
 
-#### Parameters:
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/hj-n/labeled-datasets.git
+    ```
 
-- `data` : array-like, shape (n_samples, n_features)
-    - Input data. High-dimensional data points are represented as rows that correspond to samples and columns that correspond to features.
+2. Navigate to the `labeled-datasets` directory and remove the `npy` zip file:
+    ```bash
+    cd labeled-datasets
+    rm *.zip
+    ```
 
-- `k` : int
-    - The number of nearest neighbors to consider. This is the 'k' in k-Nearest Neighbors (kNN).
+3. Create two virtual environments:
+    - For the main requirements:
+        ```bash
+        python3 -m venv venv
+        source venv/bin/activate
+        pip install -r Requirements.txt
+        ```
 
-#### Returns:
+    - For the auto-sklearn requirements:
+        ```bash
+        python3 -m venv venv-autosklearn
+        source venv-autosklearn/bin/activate
+        pip install -r requirements-autosklearn.txt
+        ```
 
-- `mnc_score` : float
-    - The MNC score of the data. This score quantifies the complexity of the local neighborhood structure.
+## Usage
 
-#### Example:
+1. **Ground Truth Generation**:
+    - Navigate to the `ground_truth` directory and run the ground truth generation script:
+        ```bash
+        source ../venv/bin/activate
+        cd src/ground_truth
+        python3 _ground_truth.py
+        ```
+    - Check that the `src/ground_truth/result` directory is generated.
 
-```python
-from mnc import mutual_neighbor_consistency
-import numpy as np
+2. **Experiments**: Run the experiments in the following order:
+    - Experiment 01: 
+        ```bash
+        python3 exp/01_run_metrics.py
+        ```
+        - Check that `src/exp/scores/` directory is generated.
+    - Experiment 02:
+        ```bash
+        python3 exp/02_accuracy.py
+        ```
+    - Experiment 03:
+        ```bash
+        python3 exp/03_time.py
+        ```
 
-data = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=np.float32)
-k = 2
-
-mnc_score = mutual_neighbor_consistency(data, k)
-print(mnc_score)
-```
-
-### `pairwise_distance_shift(data)`
-
-This function measures the Pairwise Distance Shift (PDS) of the given data.
-
-#### Parameters:
-
-- `data` : array-like, shape (n_samples, n_features)
-    - Input data. High-dimensional data points are represented as rows that correspond to samples and columns that correspond to features.
-
-#### Returns:
-
-- `pds_score` : float
-    - The PDS score of the data. This score quantifies how much the global structure of a given dataset suffers from the shift of distance.
-
-#### Example:
-
-```python
-from pds import pairwise_distance_shift
-import numpy as np
-
-data = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=np.float32)
-
-pds_score = pairwise_distance_shift(data)
-print(pds_score)
-```
-
-## Installation
-To use Structural Complexity Metrics, clone the repository and install the dependencies. Here's how you can do it:
-
-```bash
-git clone https://github.com/hj-n/structural-complexity.git
-cd structural-complexity
-pip install -r requirements.txt
-```
+3. **Applications**:
+    - Application 01:
+        - _Warning_: activate `venv-autosklearn` environment to run this. 
+        ```bash
+        python3 app/02_01_prediction.py 
+        python3 app/02_02_optimization.py
+        python3 app/02_03_test_and_to_df.py
+        ```
+    - Application 02:
+        ```bash
+        python3 app/03_01_evaluation.py
+        python3 app/03_02_cleanup.py
+        ```
+4. **Deactivate the virtual environment**:
+    ```bash
+    deactivate
+    ```
