@@ -23,7 +23,6 @@ reducibility_list = {
 	"pds": []
 }
 
-spec = [{ "id": "tnc", "params": { "k": 25} }]
 
 def extract_score(z_obj, embedding):
 	score_dict = z_obj.measure(embedding, labels)[0]
