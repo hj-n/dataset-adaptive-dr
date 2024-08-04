@@ -40,44 +40,67 @@ To set up the repository, follow these steps:
 
 ## Usage
 
-1. **Ground Truth Generation**:
-    - Navigate to the `ground_truth` directory and run the ground truth generation script:
-        ```bash
-        source ../venv/bin/activate
-        cd src/ground_truth
-        python3 _ground_truth.py
-        ```
-    - Check that the `src/ground_truth/result` directory is generated.
+### 1. Ground Truth Generation
+Generate the ground truth by navigating to the `ground_truth` directory and running the script:
+```bash
+source ../venv/bin/activate
+cd src/ground_truth
+python3 _ground_truth.py
+```
+Check that the `src/ground_truth/result` directory is generated.
 
-2. **Experiments**: Run the experiments in the following order:
-    - Experiment 01: 
-        ```bash
-        python3 exp/01_run_metrics.py
-        ```
-        - Check that `src/exp/scores/` directory is generated.
-    - Experiment 02:
-        ```bash
-        python3 exp/02_accuracy.py
-        ```
-    - Experiment 03:
-        ```bash
-        python3 exp/03_time.py
-        ```
+### 2. Experiments
+Run the experiments in the following order:
 
-3. **Applications**:
-    - Application 01:
-        - _Warning_: activate `venv-autosklearn` environment to run this. 
-        ```bash
-        python3 app/02_01_prediction.py 
-        python3 app/02_02_optimization.py
-        python3 app/02_03_test_and_to_df.py
-        ```
-    - Application 02:
-        ```bash
-        python3 app/03_01_evaluation.py
-        python3 app/03_02_cleanup.py
-        ```
-4. **Deactivate the virtual environment**:
-    ```bash
-    deactivate
-    ```
+#### Experiment 01
+Evaluate the correlation of PDS and MNC scores with ground truth structural reducibility.
+```bash
+python3 exp/01_run_metrics.py
+```
+Ensure the `src/exp/scores/` directory is generated.
+
+#### Experiment 02
+Evaluate how well our reducibility metrics and baselines predict surrogate ground truths. Test the ensemble of PDS and MNC.
+```bash
+python3 exp/02_accuracy.py
+```
+![Table 1](figs/Table1.png)
+
+#### Experiment 03
+Evaluate the speed of our structural reducibility metrics.
+```bash
+python3 exp/03_time.py
+```
+![Figure 1](figs/Figure1.png)
+
+### 3. Applications
+#### Application 01
+**Warning**: Activate the `venv-autosklearn` environment to run this.
+
+- Predicting Maximum Accuracy of DR Techniques:
+```bash
+python3 app/02_01_prediction.py 
+```
+- Enhancing Efficiency of DR Optimization:
+```bash
+python3 app/02_02_optimization.py
+```
+- Test and Convert to DataFrame:
+```bash
+python3 app/02_03_test_and_to_df.py
+```
+![Table 2](figs/Table2.png)
+![Figure 2](figs/Figure2.png)
+
+#### Application 02
+Improve the replicability of DR benchmarks:
+```bash
+python3 app/03_01_evaluation.py
+python3 app/03_02_cleanup.py
+```
+![Table 3](figs/Table3.png)
+
+### 4. Deactivate the Virtual Environment
+```bash
+deactivate
+```
