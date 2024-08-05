@@ -64,14 +64,18 @@ Evaluate how well our reducibility metrics and baselines predict surrogate groun
 ```bash
 python3 exp/02_accuracy.py
 ```
-![Table 1](figs/Table1.png)
+<div style="text-align: center;">
+    <img src="figs/Table1.png" style="width: 50%; height: auto;"/>
+</div>
 
 #### Experiment 03
 Evaluate the speed of our structural reducibility metrics.
 ```bash
 python3 exp/03_time.py
 ```
-![Figure 1](figs/Figure1.png)
+<div style="text-align: center;">
+    <img src="figs/Figure1.png" style="width: 50%; height: auto;"/>
+</div>
 
 ### 3. Applications
 #### Application 01
@@ -89,8 +93,12 @@ python3 app/02_02_optimization.py
 ```bash
 python3 app/02_03_test_and_to_df.py
 ```
-![Table 2](figs/Table2.png)
-![Figure 2](figs/Figure2.png)
+<div style="text-align: center;">
+    <img src="figs/Table2.png" style="width: 50%; height: auto;"/>
+</div>
+<div style="text-align: center;">
+    <img src="figs/Figure2.png" style="width: 50%; height: auto;"/>
+</div>
 
 #### Application 02
 Improve the replicability of DR benchmarks:
@@ -98,7 +106,9 @@ Improve the replicability of DR benchmarks:
 python3 app/03_01_evaluation.py
 python3 app/03_02_cleanup.py
 ```
-![Table 3](figs/Table3.png)
+<div style="text-align: center;">
+    <img src="figs/Table3.png" style="width: 50%; height: auto;"/>
+</div>
 
 ### 4. Deactivate the Virtual Environment
 ```bash
