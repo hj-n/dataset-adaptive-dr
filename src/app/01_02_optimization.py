@@ -4,6 +4,7 @@ import time
 import os, json
 from bayes_opt import BayesianOptimization
 import numpy as np
+from tqdm import tqdm
 
 ## run optimization for 50 iterations (10 inits, 40 acq)
 
@@ -29,13 +30,16 @@ def load_dataset(dataset_path):
 	data = np.load(dataset_path)
 	return data
 
-for idx in range(10):
+for idx in tqdm(range(10)):
 	with open(f"./app/results/predicted_tnc/{idx}.json") as f:
 		predicted_tnc = json.load(f)
 
+	if not os.path.exists("./app/results/optimization/"):
+		os.makedirs("./app/results/optimization/")
+
 	## iterate through keys
 	for dataset in predicted_tnc:
-		if os.path.exists(f"./app/results/final/{idx}_{dataset}.json"):
+		if os.path.exists(f"./app/results/optimization/{idx}_{dataset}.json"):
 			continue
 
 
@@ -103,7 +107,9 @@ for idx in range(10):
 			"pred_time": pred_time_used
 		}
 
-		with open(f"./app/results/final/{idx}_{dataset}.json", "w") as f:
+
+
+		with open(f"./app/results/optimization/{idx}_{dataset}.json", "w") as f:
 			json.dump(result, f)
 
 		## save the score to a file

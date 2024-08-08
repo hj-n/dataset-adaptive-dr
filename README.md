@@ -94,7 +94,7 @@ def mutual_neighbor_consistency(data: np.ndarray, k: int) -> float:
 
 The followings are the steps to reproduce the experiments in the paper.
 
-The experiments produces the raw data file that are used to generate the tables and figures in the paper. Note that the visualizations and tables cannot be fully reproduced as they need post-editing using other tools (e.g., LaTeX, PowerPoint, R), but we made the code to produce the matplotlib figures to check the results.
+The experiments produces the raw data file that are used to generate the tables and figures in the paper. Note that the visualizations and tables cannot be fully reproduced as they need post-editing using other tools (e.g., LaTeX, PowerPoint, R), but we made the code to produce the **matplotlib figures** as less asthetic counterparts of the ones in the paper.
 
 
 ### Setup 
@@ -109,15 +109,19 @@ To set up the repository, follow these steps:
 		```bash
 		conda create -n reducibility-main python==3.9.0
 		conda activate reducibility-main
-		pip install -r Requirements.txt
+		pip install -r requirements.txt
 		```
 
-	- For the auto-sklearn requirements:
+	- For the auto-sklearn requirements (needs separated environment due to dependency issue in auto-sklearn):
 		```bash
-		conda create -n reducibility-autosklearn python==3.9.0
+		conda create -n reducibility-autosklearn python==3.9.18
 		conda activate reducibility-autosklearn
-		pip install -r Requirements_autosklearn.txt
+		pip install -r requirements-autosklearn.txt
 		```
+
+
+
+conda create -n reducibility-autosklearn-3 -c conda-forge python==3.8.0 auto-sklearn numpy bayesian-optimization umap-learn
 
 ### Main Experiments
 
@@ -174,9 +178,50 @@ The below figure illustrates the result. As in the figure, Pds and Mnc are slowe
 
 ### Experiments for validating the Applicability of our Metrics on Use Cases
 
-#### Use case 1: 
+#### Use case 1: Guiding DR Optimization with Structural Reducibility Metrics
 
-<!-- TODO -->
+The following scripts are used to evaluate the efficiency of our metrics in guiding DR optimization (use case 1)
+
+**(Step 1: Predicting Maximum Accuracy of DR Techniques)** Run the following code to run the script. 
+
+**Warning**: Activate the `reducibility-autosklearn` conda environment to run this.
+
+```bash
+conda activate reducibility-autosklearn
+python3 -m app.01_01_prediction
+```
+
+The script will save the predicted tnc results in the `app/results/predicted_tnc/` directory.
+
+<!-- **(Step 2: Checking te -->
+
+**(Step 2: Enhancing Efficiency of DR Optimization)** 
+
+**Warning**: Switch back to the `reducibility-main` conda environment to run this.
+
+```bash
+conda activate reducibility-main
+python3 -m app.01_02_optimization
+```
+
+The script will produce the results of optimization (time and final accuracy) of each dataset in the `app/optimization/` directory. 
+
+Note that `01_03_aggregate.py` script is used to aggregate the results of the optimization to draw the results as figures using R. This will make `app1_results.csv` file in the `results/` directory.
+
+
+**(Result and Discussion)**
+The results indicate that interrupting iterations based on estimated optimal scores exhibit a substantial reduction in execution time compared to running optimization with a fixed number of iterations.
+
+<p align="center">    <img src="figs/Table2.png" style="width: 50%; height: auto;"/>
+</p>
+<p align="center">    <img src="figs/Figure2.png" style="width: 50%; height: auto;"/>
+</p>
+
+
+#### Use case 2: Improving the Replicability of DR Benchmarks
+
+
+
 
 
 -----------------

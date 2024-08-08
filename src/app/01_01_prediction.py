@@ -44,6 +44,7 @@ for dataset in DATASET_LIST:
 if not os.path.exists("./app/results/predicted_tnc/9.json"):
 	## run AutoML to find the predicted accuracy
 	for trial in range(10):
+		print(f"running trial {trial}...")
 		shuffled_indices = np.random.permutation(len(DATASET_LIST))
 		shuffled_dataset_list = [DATASET_LIST[i] for i in shuffled_indices]
 		shuffled_technique_optimal_score_list = [technique_optimal_score_list[i] for i in shuffled_indices]
@@ -98,6 +99,9 @@ if not os.path.exists("./app/results/predicted_tnc/9.json"):
 				"prediction": float(predictions[i]),
 				"true": float(testing_target[i])
 			}
+
+			if not os.path.exists("./app/results/predicted_tnc"):
+				os.makedirs("./app/results/predicted_tnc")
 
 			with open(f"./app/results/predicted_tnc/{trial}.json", "w") as f:
 				json.dump(result, f)
