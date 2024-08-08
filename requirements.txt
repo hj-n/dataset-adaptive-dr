@@ -6,3 +6,4 @@ tqdm
 pybind11>=2.12  # For rebuilding modules if necessary
 scikit-learn
 umap-learn
+bayesian-optimization

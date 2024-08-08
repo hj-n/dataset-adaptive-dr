@@ -133,12 +133,20 @@ See `src/ground_truth/result` directory to check whether the files are generated
 
 #### 2. Correlation Analysis
 
-Evaluate the correlation of PDS and MNC scores with ground truth structural reducibility. This result is needed for further experiments and applications.
-```bash
+Evaluate the correlation of PDS and MNC scores with ground truth structural reducibility. This result is needed for further experiments and applications. 
 
-python3 exp/01_run_metrics.py
+**(Step 1)** The evaluation starts by running the following script to apply the reducibility metrics and baselines to the datasets:
+```bash
+python3  -m exp.01_run_metrics.py
 ```
-Ensure the `src/exp/scores/` directory and its subdirectories are properly generated.
+Check `exp/results` directory to check whether the `correlation.csv` file is prperly generated.
+
+**(Step 2)** Run the script to check how well the reducibility metrics and baselines correlate with the ground truth:
+```bash
+python3  -m exp.02_accuracy.py
+```
+
+
 
 
 

@@ -20,7 +20,7 @@ cuda.select_device(1)
 DATASET_PATH = "../labeled-datasets/npy/"
 DATASET_LIST = os.listdir(DATASET_PATH)
 
-DATA_POINT_MAXNUM = 2000
+DATA_POINT_MAXNUM = 3000
 
 
 def load_dataset(dataset_path):
@@ -35,6 +35,7 @@ def load_dataset(dataset_path):
 mnc_25_scores = []
 mnc_50_scores = []
 mnc_75_scores = []
+mnc_100_scores = []
 pds_scores = []
 embedding_intdim_scores = []
 geometric_intdim_scores = []
@@ -42,6 +43,7 @@ geometric_intdim_scores = []
 mnc_25_times = []
 mnc_50_times = []
 mnc_75_times = []
+mnc_100_times = []
 pds_times = []
 embedding_intdim_times = []
 geometric_intdim_times = []
@@ -77,6 +79,11 @@ for dataset in tqdm(DATASET_LIST):
 	mnc_75_scores.append(scores)
 	mnc_75_times.append(timed)
 
+
+	timed, scores = return_score_and_time(lambda x: mnc(x, 100), data)
+	mnc_100_scores.append(scores)
+	mnc_100_times.append(timed)
+
 	timed, scores = return_score_and_time(lambda x: pds(x), data)
 	pds_scores.append(scores)
 	pds_times.append(timed)
@@ -111,6 +118,7 @@ if not os.path.exists("./exp/scores/intrinsic_dim"):
 save_result(mnc_25_scores, mnc_25_times, "./exp/scores/reducibility/mnc_25.json")
 save_result(mnc_50_scores, mnc_50_times, "./exp/scores/reducibility/mnc_50.json")
 save_result(mnc_75_scores, mnc_75_times, "./exp/scores/reducibility/mnc_75.json")
+save_result(mnc_100_scores, mnc_100_times, "./exp/scores/reducibility/mnc_100.json")
 save_result(pds_scores, pds_times, "./exp/scores/reducibility/pds.json")
 save_result(embedding_intdim_scores, embedding_intdim_times, "./exp/scores/intrinsic_dim/embedding_intdim.json")
 save_result(geometric_intdim_scores, geometric_intdim_times, "./exp/scores/intrinsic_dim/geometric_intdim.json")
