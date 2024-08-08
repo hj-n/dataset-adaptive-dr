@@ -123,23 +123,25 @@ def save_best_embedding_score_dict(method, measure, measure_names, params, ident
 		json.dump(scores_dict, f)
 
 
-dr_method = "pca"
+dr_methods = ["pca", "umap", "tsne", "umato", "lle", "isomap"]
 
-print(dr_method)
+for dr_method in dr_methods:
+	print("Running for method:", dr_method)
 
-save_best_embedding_score_dict(
-	dr_method, "mrre", ["mrre_false", "mrre_missing"], {"k": 25}, 25, True
-)
-save_best_embedding_score_dict(
-	dr_method, "l_tnc", ["label_trustworthiness", "label_continuity"], {}, 0, True
-)
-save_best_embedding_score_dict(
-	dr_method, "tnc", ["trustworthiness", "continuity"], {"k": 25}, 25, True
-)
-save_best_embedding_score_dict(
-	dr_method, "srho", ["spearman_rho"], {}, 0, True
-)
+	save_best_embedding_score_dict(
+		dr_method, "mrre", ["mrre_false", "mrre_missing"], {"k": 25}, 25, True
+	)
+	save_best_embedding_score_dict(
+		dr_method, "l_tnc", ["label_trustworthiness", "label_continuity"], {}, 0, True
+	)
+	save_best_embedding_score_dict(
+		dr_method, "tnc", ["trustworthiness", "continuity"], {"k": 25}, 25, True
+	)
+	save_best_embedding_score_dict(
+		dr_method, "srho", ["spearman_rho"], {}, 0, True
+	)
 
-save_best_embedding_score_dict(
-	dr_method, "pr", ["pearson_r"], {}, 0, True
-)
+	save_best_embedding_score_dict(
+		dr_method, "pr", ["pearson_r"], {}, 0, True
+	)
+
