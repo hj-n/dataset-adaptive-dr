@@ -1,11 +1,92 @@
 <p align="center">
-  <h2 align="center">Structural-Reducibility</h2>
-	<p align="center">Repository for Measuring the Structural Reducibility of Datasets for Fast and Accurate Dimensionality Reduction</p>
+  <h2 align="center">Structural Reducibility Metrics</h2>
+	<p align="center">Repository for the paper <i>Measuring the Structural Reducibility of Datasets for Fast and Accurate Dimensionality Reduction</i></p>
 </p>
 
 ---
 
-Dimensionality reduction (DR) is essential for visualizing and analyzing high-dimensional (HD) datasets, yet obtaining accurate DR projections efficiently is challenging. Optimizing DR hyperparameters can be computationally intensive due to the difficulty in identifying the optimal number of iterations. Furthermore, the performance of DR techniques on benchmark datasets often does not generalize well to real-world datasets. To address these issues, we propose measuring the structural reducibility of HD datasets to inform DR optimization and benchmarking. We introduce two metrics—mutual neighbor consistency (MNC) and pairwise distance shift (PDS)—to quantify structural reducibility. These metrics accelerate DR optimization by guiding the number of iterations needed to reach the optima and improve the consistency of DR evaluation results across different datasets. Our experiments show that MNC and PDS are accurate and efficient, outperforming existing methods and addressing practical problems in DR optimization and evaluation.
+We introduce two structural reducibility metrics, Pairwise Distance Shift (PDS) and Mutual Neighbor Consistency (MNC), which are designed to quantify the maximum achievable structural consistency between high-dimensional (HD) datasets and their 2D projections. These metrics guide dimensionality reduction (DR) by predicting optimal iteration numbers, reducing computational costs, and improving the reliability of DR benchmarks. Experiments on 96 real-world datasets validate that MMC and PDS enhance DR benchmark and optimization processes' accuracy and efficiency.
+
+
+This repository provides:
+1. Implementation of the two structural reducibility metrics: PDS and MNC
+2. Codes for reproducding the experiments in the related academic paper
+
+
+## Structrual Reducibility Metrics
+
+The implementation of structrual reducibility metrics (PDS, MNC) are provided under the directory `/src/reducibility/`. MNC and PDS is defined wihtin `pds.py` and `mnc.py`, respectively. 
+
+### Requirements
+
+- Python 3.8+
+- Numpy
+- Scipy
+- Numba
+
+The requirements can be automatically installed by creating the virtual envrionments (e.g., `conda`) and installing the main requirements:
+```bash
+conda create -n reducibility python==3.9.0
+pip install -r Requirements.txt
+```
+
+### Specification
+
+#### PDS (Pairwise Distance Shift)
+
+The `pairwise_distance_shift` function computes a complexity metric targeting the global structure of high-dimensional data. It evaluates the shift in pairwise distances within the dataset by analyzing the distribution of distances.
+
+```python
+def pairwise_distance_shift(data: np.ndarray) -> float:
+```
+
+- Parameters
+  - `data (numpy array)`: A numpy array of shape `(n_samples, n_features)` representing the high-dimensional data.
+- Returns
+  - `float`: The pairwise distance shift value.
+
+
+> **Example**
+> ```python
+> from pairwise_distance_shift import pairwise_distance_shift
+> import numpy as np
+>
+> # Example data
+>data = np.random.rand(100, 5)
+>
+> # Compute pairwise distance shift
+> shift_value = pairwise_distance_shift(data)
+> print(f"Pairwise Distance Shift: {shift_value}")
+> ```
+
+
+#### MNC (Mutual Neighbor Consistency)
+
+The `mutual_neighbor_consistency` function computes a complexity metric targeting the local structure of high-dimensional data. It evaluates the consistency of mutual neighbors within the dataset using k-nearest neighbors (kNN) and shared nearest neighbors (SNN) concepts.
+
+```python
+def mutual_neighbor_consistency(data: np.ndarray, k: int) -> float:
+```
+
+- Parameters
+	- `data (numpy array)`: A numpy array of shape `(n_samples, n_features)` representing the high-dimensional data.
+	- `k (int)`: The number of neighbors to consider.
+
+- Returns
+	- `float`: The mutual neighbor consistency value.
+
+> **Example**
+> ```python
+> from mutual_neighbor_consistency import mutual_neighbor_consistency
+> import numpy as np
+>
+> # Example data
+> data = np.random.rand(100, 5)
+>
+> # Compute mutual neighbor consistency
+> consistency_value = mutual_neighbor_consistency(data, k=5)
+> print(f"Mutual Neighbor Consistency: {consistency_value}")
+> ```
 
 
 # Setup

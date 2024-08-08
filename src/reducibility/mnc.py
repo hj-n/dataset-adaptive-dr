@@ -41,5 +41,4 @@ def mutual_neighbor_consistency(data, k):
 
 	
 
-## TODO : 구현	
 	
