@@ -86,5 +86,5 @@ df = pd.DataFrame({
 	"metric": metric
 })
 
-df.to_csv("./exp/data/time.csv", index=False)
+df.to_csv("./exp/results/time.csv", index=False)
 

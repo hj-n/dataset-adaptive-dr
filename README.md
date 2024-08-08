@@ -119,7 +119,7 @@ To set up the repository, follow these steps:
 		pip install -r Requirements_autosklearn.txt
 		```
 
-### Experiment
+### Main Experiments
 
 Run every codes under the `src` directory. The experiments are divided into three parts: approximation of ground truth structural reducibility, correlation/efficiency analysis, and use cases. 
 
@@ -139,51 +139,47 @@ Evaluate the correlation of PDS and MNC scores with ground truth structural redu
 ```bash
 python3  -m exp.01_run_metrics.py
 ```
-Check `exp/results` directory to check whether the `correlation.csv` file is prperly generated.
+Ensure the `src/exp/scores/` directory and its subdirectories are properly generated.
+
 
 **(Step 2)** Run the script to check how well the reducibility metrics and baselines correlate with the ground truth:
 ```bash
 python3  -m exp.02_accuracy.py
 ```
+Check `exp/results` directory to check whether the `correlation.csv` file is prperly generated.
 
 
-
-
-
-
-<!-- TODO -->
-
-
-
-
-
-
-
-
-
-### Experiment 02: Correlation Analysis
-Evaluate how well our reducibility metrics and baselines predict surrogate ground truths. Test the ensemble of PDS and MNC.
-```bash
-python3 -m exp.02_correlation
-```
-
-#### Result and Discussion
+**(Result and Discussion)**
 The below table shows the result of this experiment. Pds and Mnc well explain global and local structural reducibility, respectively, outperforming intrinsic dimensionality metrics. Their ensemble (Pds+Mnc) achieves the best correlation with all types of structural reducibility.
 <p align="center">    
 <img src="figs/Table1.png" style="width: 50%; height: auto;"/>
 </p>
 
-### Experiment 03: Efficiency Analysis
-Evaluate the speed of our structural reducibility metrics.
-```bash
-python3 exp/03_time.py
-```
 
-#### Result and Discussion
+#### 2. Efficinecy Analysis
+
+This evaluation is conducted to evaluate the speed of our structural reducibility metrics.
+We reuse the time measurement done while executing the previous experiment. The below script's functionality is to aggregate the time measurements as a single file.
+
+```bash
+python3 -m exp.03_time.py
+```
+Please check the `exp/results` directory to see whether the `time.csv` file is properly generated.
+
+**(Result and Discussion)**
 The below figure illustrates the result. As in the figure, Pds and Mnc are slower than the projection-based intrinsic dimensionality metric but are faster than other baselines. 
 
 <p align="center">    <img src="figs/Figure1.png" style="width: 50%; height: auto;"/>
 </p>
+
+### Experiments for validating the Applicability of our Metrics on Use Cases
+
+#### Use case 1: 
+
+<!-- TODO -->
+
+
+-----------------
 
 
 
