@@ -126,25 +126,37 @@ Run every codes under the `src` directory. The experiments are divided into thre
 #### 1. Approximation of the Ground Truth Structural Reducibility of Datasets
 Generate the ground truth by navigating to the `ground_truth` directory and running the script:
 ```bash
-source ../venv/bin/activate
-cd src/ground_truth
-python3 _ground_truth.py
+conda activate reducibility-main
+python3 -m ground_truth._ground_truth
 ```
 See `src/ground_truth/result` directory to check whether the files are generated. Here, the approximated ground truth of each dataset computed by each DR evaluation metrics (`tnc`, `mrre`, `l-tnc`, `srho`, `pr`) can be obtained by finding the maximum `score` of each dataset achievable across all DR techniques.
 
 #### 2. Correlation Analysis
 
-<!-- TODO -->
 Evaluate the correlation of PDS and MNC scores with ground truth structural reducibility. This result is needed for further experiments and applications.
 ```bash
+
 python3 exp/01_run_metrics.py
 ```
-Ensure the `src/exp/scores/` directory is generated.
+Ensure the `src/exp/scores/` directory and its subdirectories are properly generated.
+
+
+
+
+<!-- TODO -->
+
+
+
+
+
+
+
+
 
 ### Experiment 02: Correlation Analysis
 Evaluate how well our reducibility metrics and baselines predict surrogate ground truths. Test the ensemble of PDS and MNC.
 ```bash
-python3 exp/02_accuracy.py
+python3 -m exp.02_correlation
 ```
 
 #### Result and Discussion

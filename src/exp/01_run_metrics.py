@@ -6,7 +6,6 @@ import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from reducibility.naive_mnc import mutual_neighbor_consistency as mnc_naive
 from reducibility.mnc import mutual_neighbor_consistency as mnc
 from reducibility.pds import pairwise_distance_shift as pds
 
@@ -33,21 +32,15 @@ def load_dataset(dataset_path):
 
 ## STEP 1: Compute the reducibility and intrinsic dimensionality 
 
-mnc_naive_25_scores = []
 mnc_25_scores = []
-mnc_naive_50_scores = []
 mnc_50_scores = []
-mnc_naive_75_scores = []
 mnc_75_scores = []
 pds_scores = []
 embedding_intdim_scores = []
 geometric_intdim_scores = []
 
-mnc_naive_25_times = []
 mnc_25_times = []
-mnc_naive_50_times = []
 mnc_50_times = []
-mnc_naive_75_times = []
 mnc_75_times = []
 pds_times = []
 embedding_intdim_times = []
@@ -69,25 +62,16 @@ for dataset in tqdm(DATASET_LIST):
 		data = data[filterer]
 		labels = labels[filterer]
 
-	timed, scores = return_score_and_time(lambda x: mnc_naive(x, 25), data)
-	mnc_naive_25_scores.append(scores)
-	mnc_naive_25_times.append(timed)
 
 	timed, scores = return_score_and_time(lambda x: mnc(x, 25), data)
 	mnc_25_scores.append(scores)
 	mnc_25_times.append(timed)
 
-	timed, scores = return_score_and_time(lambda x: mnc_naive(x, 50), data)
-	mnc_naive_50_scores.append(scores)
-	mnc_naive_50_times.append(timed)
 
 	timed, scores = return_score_and_time(lambda x: mnc(x, 50), data)
 	mnc_50_scores.append(scores)
 	mnc_50_times.append(timed)
 
-	timed, scores = return_score_and_time(lambda x: mnc_naive(x, 75), data)
-	mnc_naive_75_scores.append(scores)
-	mnc_naive_75_times.append(timed)
 
 	timed, scores = return_score_and_time(lambda x: mnc(x, 75), data)
 	mnc_75_scores.append(scores)
@@ -117,11 +101,15 @@ def save_result(scores, times, path):
 		json.dump(result, f)
 
 
-save_result(mnc_naive_25_scores, mnc_naive_25_times, "./exp/scores/reducibility/mnc_naive_25.json")
+## if path does not exist, create it
+if not os.path.exists("./exp/scores/reducibility"):
+	os.makedirs("./exp/scores/reducibility")
+if not os.path.exists("./exp/scores/intrinsic_dim"):
+	os.makedirs("./exp/scores/intrinsic_dim")
+
+
 save_result(mnc_25_scores, mnc_25_times, "./exp/scores/reducibility/mnc_25.json")
-save_result(mnc_naive_50_scores, mnc_naive_50_times, "./exp/scores/reducibility/mnc_naive_50.json")
 save_result(mnc_50_scores, mnc_50_times, "./exp/scores/reducibility/mnc_50.json")
-save_result(mnc_naive_75_scores, mnc_naive_75_times, "./exp/scores/reducibility/mnc_naive_75.json")
 save_result(mnc_75_scores, mnc_75_times, "./exp/scores/reducibility/mnc_75.json")
 save_result(pds_scores, pds_times, "./exp/scores/reducibility/pds.json")
 save_result(embedding_intdim_scores, embedding_intdim_times, "./exp/scores/intrinsic_dim/embedding_intdim.json")
