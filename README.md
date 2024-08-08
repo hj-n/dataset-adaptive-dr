@@ -8,7 +8,7 @@
 Dimensionality reduction (DR) is essential for visualizing and analyzing high-dimensional (HD) datasets, yet obtaining accurate DR projections efficiently is challenging. Optimizing DR hyperparameters can be computationally intensive due to the difficulty in identifying the optimal number of iterations. Furthermore, the performance of DR techniques on benchmark datasets often does not generalize well to real-world datasets. To address these issues, we propose measuring the structural reducibility of HD datasets to inform DR optimization and benchmarking. We introduce two metrics—mutual neighbor consistency (MNC) and pairwise distance shift (PDS)—to quantify structural reducibility. These metrics accelerate DR optimization by guiding the number of iterations needed to reach the optima and improve the consistency of DR evaluation results across different datasets. Our experiments show that MNC and PDS are accurate and efficient, outperforming existing methods and addressing practical problems in DR optimization and evaluation.
 
 
-## Setup
+# Setup
 
 To set up the repository, follow these steps:
 
@@ -38,9 +38,9 @@ To set up the repository, follow these steps:
         pip install -r requirements-autosklearn.txt
         ```
 
-## Usage
+# Usage
 
-### 1. Ground Truth Generation
+## 1. Ground Truth Generation
 Generate the ground truth by navigating to the `ground_truth` directory and running the script:
 ```bash
 source ../venv/bin/activate
@@ -49,32 +49,44 @@ python3 _ground_truth.py
 ```
 Check that the `src/ground_truth/result` directory is generated.
 
-### 2. Experiments
+## 2. Experiments
 Run the experiments in the following order:
 
-#### Experiment 01
-Evaluate the correlation of PDS and MNC scores with ground truth structural reducibility.
+### Experiment 01
+Evaluate the correlation of PDS and MNC scores with ground truth structural reducibility. This result is needed for further experiments and applications.
 ```bash
 python3 exp/01_run_metrics.py
 ```
 Ensure the `src/exp/scores/` directory is generated.
 
-#### Experiment 02
+### Experiment 02: Correlation Analysis
 Evaluate how well our reducibility metrics and baselines predict surrogate ground truths. Test the ensemble of PDS and MNC.
 ```bash
 python3 exp/02_accuracy.py
 ```
-![Table 1](figs/Table1.png)
 
-#### Experiment 03
+#### Result and Discussion
+The below table shows the result of this experiment. Pds and Mnc well explain global and local structural reducibility, respectively, outperforming intrinsic dimensionality metrics. Their ensemble (Pds+Mnc) achieves the best correlation with all types of structural reducibility.
+<p align="center">    
+<img src="figs/Table1.png" style="width: 50%; height: auto;"/>
+</p>
+
+### Experiment 03: Efficiency Analysis
 Evaluate the speed of our structural reducibility metrics.
 ```bash
 python3 exp/03_time.py
 ```
-![Figure 1](figs/Figure1.png)
 
-### 3. Applications
-#### Application 01
+#### Result and Discussion
+The below figure illustrates the result. As in the figure, Pds and Mnc are slower than the projection-based intrinsic dimensionality metric but are faster than other baselines. 
+
+<p align="center">    <img src="figs/Figure1.png" style="width: 50%; height: auto;"/>
+</p>
+
+
+
+## 3. Applications
+### Application 01: Predicting Maximum Accuracy of DR Techniques
 **Warning**: Activate the `venv-autosklearn` environment to run this.
 
 - Predicting Maximum Accuracy of DR Techniques:
@@ -89,18 +101,29 @@ python3 app/02_02_optimization.py
 ```bash
 python3 app/02_03_test_and_to_df.py
 ```
-![Table 2](figs/Table2.png)
-![Figure 2](figs/Figure2.png)
 
-#### Application 02
+#### Result and Discussion
+The results indicate that interrupting iterations based on estimated optimal scores exhibit a substantial reduction in execution time compared to running optimization with a fixed number of iterations.
+
+<p align="center">    <img src="figs/Table2.png" style="width: 50%; height: auto;"/>
+</p>
+<p align="center">    <img src="figs/Figure2.png" style="width: 50%; height: auto;"/>
+</p>
+
+### Application 02
 Improve the replicability of DR benchmarks:
 ```bash
 python3 app/03_01_evaluation.py
 python3 app/03_02_cleanup.py
 ```
-![Table 3](figs/Table3.png)
 
-### 4. Deactivate the Virtual Environment
+#### Result and Discussion
+Table 3 depicts the results. +global 916 & −local, −local, and +global improve the replicability of the 917 DR benchmark using local evaluation metrics (T&C, MRREs).
+
+<p align="center">    <img src="figs/Table3.png" style="width: 50%; height: auto;"/>
+</p>
+
+## 4. Deactivate the Virtual Environment
 ```bash
 deactivate
 ```
