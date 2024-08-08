@@ -1,6 +1,6 @@
 import numpy as np 
 import os, json
-import helpers as hp
+import ground_truth.helpers as hp
 from zadu import zadu
 from bayes_opt import BayesianOptimization
 import umap
@@ -12,11 +12,11 @@ from sklearn.manifold import Isomap, LocallyLinearEmbedding
 
 import umato
 
-DATASET_PATH = "../../labeled-datasets/npy/"
+DATASET_PATH = "../labeled-datasets/npy/"
 DATASET_LIST = os.listdir(DATASET_PATH)
 INIT_POINTS = 10
 N_ITER = 40
-DATA_POINT_MAXNUM = 2000
+DATA_POINT_MAXNUM = 3000
 
 
 def find_best_embedding_score(data, labels, method, measure, measure_names, params, is_higher_better=True):
@@ -117,9 +117,9 @@ def save_best_embedding_score_dict(method, measure, measure_names, params, ident
 		scores_dict[dataset] = {"score": score, "params": embeeding_params, "time": time_taken}
 
 	print("Saving scores to file...")
-	if not os.path.exists("./results"):
-		os.makedirs("./results")
-	with open(f"./results/{method}_{measure}_{identifier}.json", "w") as f:
+	if not os.path.exists("./ground_truth/results"):
+		os.makedirs("./ground_truth/results")
+	with open(f"./ground_truth/results/{method}_{measure}_{identifier}.json", "w") as f:
 		json.dump(scores_dict, f)
 
 

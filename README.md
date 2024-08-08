@@ -13,11 +13,11 @@ This repository provides:
 2. Codes for reproducing the experiments in the related academic paper
 
 
-# Structrual Reducibility Metrics
+## Structrual Reducibility Metrics
 
 The implementation of structrual reducibility metrics (PDS, MNC) are provided under the directory `/src/reducibility/`. MNC and PDS is defined wihtin `pds.py` and `mnc.py`, respectively. 
 
-## Requirements
+### Requirements
 
 - Python 3.8+
 - Numpy
@@ -31,9 +31,9 @@ conda activate reducibility
 pip install -r Requirements.txt
 ```
 
-## Specification
+### Specification
 
-### PDS (Pairwise Distance Shift)
+#### PDS (Pairwise Distance Shift)
 
 The `pairwise_distance_shift` function computes a complexity metric targeting the global structure of high-dimensional data. It evaluates the shift in pairwise distances within the dataset by analyzing the distribution of distances.
 
@@ -61,7 +61,7 @@ def pairwise_distance_shift(data: np.ndarray) -> float:
 > ```
 
 
-### MNC (Mutual Neighbor Consistency)
+#### MNC (Mutual Neighbor Consistency)
 
 The `mutual_neighbor_consistency` function computes a complexity metric targeting the local structure of high-dimensional data. It evaluates the consistency of mutual neighbors within the dataset using k-nearest neighbors (kNN) and shared nearest neighbors (SNN) concepts.
 
@@ -90,14 +90,14 @@ def mutual_neighbor_consistency(data: np.ndarray, k: int) -> float:
 > ```
 
 
-# Reproducing the Experiments
+## Reproducing the Experiments
 
 The followings are the steps to reproduce the experiments in the paper.
 
 The experiments produces the raw data file that are used to generate the tables and figures in the paper. Note that the visualizations and tables cannot be fully reproduced as they need post-editing using other tools (e.g., LaTeX, PowerPoint, R), but we made the code to produce the matplotlib figures to check the results.
 
 
-## Setup 
+### Setup 
 
 To set up the repository, follow these steps:
 
@@ -119,23 +119,22 @@ To set up the repository, follow these steps:
 		pip install -r Requirements_autosklearn.txt
 		```
 
-## Experiment
+### Experiment
 
 Run every codes under the `src` directory. The experiments are divided into three parts: approximation of ground truth structural reducibility, correlation/efficiency analysis, and use cases. 
 
-### 1. Ground Truth Generation
+#### 1. Approximation of the Ground Truth Structural Reducibility of Datasets
 Generate the ground truth by navigating to the `ground_truth` directory and running the script:
 ```bash
 source ../venv/bin/activate
 cd src/ground_truth
 python3 _ground_truth.py
 ```
-Check that the `src/ground_truth/result` directory is generated.
+See `src/ground_truth/result` directory to check whether the files are generated. Here, the approximated ground truth of each dataset computed by each DR evaluation metrics (`tnc`, `mrre`, `l-tnc`, `srho`, `pr`) can be obtained by finding the maximum `score` of each dataset achievable across all DR techniques.
 
-## 2. Experiments
-Run the experiments in the following order:
+#### 2. Correlation Analysis
 
-### Experiment 01
+<!-- TODO -->
 Evaluate the correlation of PDS and MNC scores with ground truth structural reducibility. This result is needed for further experiments and applications.
 ```bash
 python3 exp/01_run_metrics.py
