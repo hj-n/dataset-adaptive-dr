@@ -2,6 +2,7 @@ import numpy as np
 import os, json
 from scipy.stats import spearmanr
 import pandas as pd
+from tqdm import tqdm
 
 DATASET_PATH = "../labeled-datasets/npy/"
 DATASET_LIST = os.listdir(DATASET_PATH)
@@ -69,8 +70,8 @@ def extract_ranking(datasets, dr_metric):
 
 
 ## informations
-Pzero_correlations_list = []
-Pzero_metrics_list = []
+Prandom_correlations_list = []
+Prandom_metrics_list = []
 
 Pplusminus_correlations_list = []
 Pplusminus_metrics_list = []
@@ -80,6 +81,8 @@ Pplusminus_rankingby_list = []
 
 for dr_metric in DR_METRICS:
 	for ranking_method in ["mnc", "pds", "mncpds"]:
+
+		print(f"running {dr_metric} with {ranking_method}...")
 		if ranking_method == "mnc":
 			Pplus_datasets = MNC_50_DATASETS[:20]
 			Pminus_datasets = MNC_50_DATASETS[-20:]
@@ -94,36 +97,36 @@ for dr_metric in DR_METRICS:
 		spearmanr_plue_list = []
 		spearmanr_minus_list = []
 		spearmanr_zero_list = []
-		for idx in range(10):
+		for idx in tqdm(range(10)):
 			## pick random 20 datasets from the entire dataset list
-			Pzero_datasets = np.random.choice(DATASET_LIST, 20, replace=False)
+			Prandom_datasets = np.random.choice(DATASET_LIST, 20, replace=False)
 
 			Pplus_rankings = []
 			Pminus_rankings = []
-			Pzero_rankings = []
+			Prandom_rankings = []
 			for jdx in range(30):
 
 			## pick random 10 datasets from Pplus and Pminus
 				Pplus_sampled = np.random.choice(Pplus_datasets, 10, replace=False)
 				Pminus_sampled = np.random.choice(Pminus_datasets, 10, replace=False)
-				Pzero_sampled = np.random.choice(Pzero_datasets, 10, replace=False)
+				Prandom_sampled = np.random.choice(Prandom_datasets, 10, replace=False)
 
 				Pplus_rankings.append(extract_ranking(Pplus_sampled, dr_metric))
 				Pminus_rankings.append(extract_ranking(Pminus_sampled, dr_metric))
-				Pzero_rankings.append(extract_ranking(Pzero_sampled, dr_metric))
+				Prandom_rankings.append(extract_ranking(Prandom_sampled, dr_metric))
 			
 			for ii in range(30):
 				for jj in range(ii + 1, 30):
 					spearmanr_plus, _ = spearmanr(Pplus_rankings[ii], Pplus_rankings[jj])
 					spearmanr_minus, _ = spearmanr(Pminus_rankings[ii], Pminus_rankings[jj])
-					spearmanr_zero, _ = spearmanr(Pzero_rankings[ii], Pzero_rankings[jj])
+					spearmanr_zero, _ = spearmanr(Prandom_rankings[ii], Prandom_rankings[jj])
 
 					spearmanr_plue_list.append(spearmanr_plus)
 					spearmanr_minus_list.append(spearmanr_minus)
 					spearmanr_zero_list.append(spearmanr_zero)
 		
-		Pzero_correlations_list += spearmanr_zero_list
-		Pzero_metrics_list += [dr_metric] * len(spearmanr_zero_list)
+		Prandom_correlations_list += spearmanr_zero_list
+		Prandom_metrics_list += [dr_metric] * len(spearmanr_zero_list)
 
 		Pplusminus_correlations_list += spearmanr_plue_list + spearmanr_minus_list
 		Pplusminus_metrics_list += [dr_metric] * (len(spearmanr_plue_list) + len(spearmanr_minus_list))
@@ -138,11 +141,11 @@ df_pplusminus = pd.DataFrame({
 	"rankingby": Pplusminus_rankingby_list
 })
 
-df_pzero = pd.DataFrame({
-	"metric": Pzero_metrics_list,
-	"correlation": Pzero_correlations_list
+df_Prandom = pd.DataFrame({
+	"metric": Prandom_metrics_list,
+	"correlation": Prandom_correlations_list
 })
 
-df_pplusminus.to_csv("./app/results/exp2_pplusminus.csv", index=False)
+df_pplusminus.to_csv("./app/results/app2_pplusminus.csv", index=False)
 
-df_pzero.to_csv("./app/results/exp2_pzero.csv", index=False)
+df_Prandom.to_csv("./app/results/app2_prandom.csv", index=False)

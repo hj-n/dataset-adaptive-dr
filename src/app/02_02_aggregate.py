@@ -1,11 +1,9 @@
 import numpy as np 
 import pandas as pd
 
-pplusminus_result = pd.read_csv("./app/results/exp2_pplusminus.csv")
-pzero_result = pd.read_csv("./app/results/exp2_pzero.csv")
+pplusminus_result = pd.read_csv("./app/results/app2_pplusminus.csv")
+pzero_result = pd.read_csv("./app/results/app2_prandom.csv")
 
-
-print(pplusminus_result.head())
 
 
 average_result = {}
@@ -50,11 +48,26 @@ for metric in ["tnc_25", "mrre_25", "l_tnc_0", "srho_0", "pr_0"]:
 	average_result[metric]["global+local-"] = globalpluslocalminus[globalpluslocalminus["metric"] == metric]["correlation"].mean()
 
 
+metric_list = []
+method_list = []
+correlation_list = []
+
+for metric in average_result:
+	for method in average_result[metric]:
+		
+		metric_list.append(metric)
+		method_list.append(method)
+		correlation_list.append(average_result[metric][method])
+
+df = pd.DataFrame({
+	"metric": metric_list,
+	"method": method_list,
+	"correlation": correlation_list
+})
 
 
 
-print(average_result)
-	
+df.to_csv("./app/results/app2_results.csv", index=False)
 
 
 
