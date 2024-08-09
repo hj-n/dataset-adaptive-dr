@@ -15,7 +15,7 @@ This repository provides:
 
 ## Structrual Reducibility Metrics
 
-The implementation of structrual reducibility metrics (PDS, MNC) are provided under the directory `/src/reducibility/`. MNC and PDS is defined wihtin `pds.py` and `mnc.py`, respectively. 
+The implementation of structural reducibility metrics (PDS, MNC) is provided under the directory `/src/reducibility/`. MNC and PDS are defined within `pds.py` and `mnc.py`, respectively. 
 
 ### Requirements
 
@@ -24,7 +24,7 @@ The implementation of structrual reducibility metrics (PDS, MNC) are provided un
 - Scipy
 - Numba
 
-The requirements can be automatically installed by creating the virtual envrionments (e.g., `conda`) and installing the main requirements:
+The requirements can be automatically installed by creating the virtual environments (e.g., `conda`) and installing the main requirements:
 ```bash
 conda create -n reducibility python==3.9.0
 conda activate reducibility
@@ -92,8 +92,8 @@ def mutual_neighbor_consistency(data: np.ndarray, k: int) -> float:
 
 ## Reproducing the Experiments
 
-The followings are the steps to reproduce the experiments in the paper.
-The experiments produces the raw data file that are used to generate the tables and figures in the paper. 
+The following are the steps to reproduce the experiments in the paper.
+The experiments produce the raw data file that is used to generate the tables and figures in the paper. 
 
 
 ### Setup 
@@ -132,7 +132,7 @@ Generate the ground truth by navigating to the `ground_truth` directory and runn
 conda activate reducibility-main
 python3 -m ground_truth._ground_truth
 ```
-See `src/ground_truth/result` directory to check whether the files are generated. Here, the approximated ground truth of each dataset computed by each DR evaluation metrics (`tnc`, `mrre`, `l-tnc`, `srho`, `pr`) can be obtained by finding the maximum `score` of each dataset achievable across all DR techniques.
+See `src/ground_truth/result` directory to check whether the files are generated. Here, the approximated ground truth of each dataset computed by each DR evaluation metric (`tnc`, `mrre`, `l-tnc`, `srho`, `pr`) can be obtained by finding the maximum `score` of each dataset achievable across all DR techniques.
 
 #### 2. Correlation Analysis
 
@@ -227,7 +227,7 @@ python3 -m app.02_01_evaluation
 python3 -m app.02_02_aggregate
 ```
 
-The script will produce the results of the evaluation in the `app/results/` directory.
+The script will produce the evaluation results in the `app/results/` directory.
 
 **(Result and Discussion)**
 Table 3 depicts the results. 
