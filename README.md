@@ -93,8 +93,7 @@ def mutual_neighbor_consistency(data: np.ndarray, k: int) -> float:
 ## Reproducing the Experiments
 
 The followings are the steps to reproduce the experiments in the paper.
-
-The experiments produces the raw data file that are used to generate the tables and figures in the paper. Note that the visualizations and tables cannot be fully reproduced as they need post-editing using other tools (e.g., LaTeX, PowerPoint, R), but we made the code to produce the **matplotlib figures** as less asthetic counterparts of the ones in the paper.
+The experiments produces the raw data file that are used to generate the tables and figures in the paper. 
 
 
 ### Setup 
@@ -221,52 +220,18 @@ The results indicate that interrupting iterations based on estimated optimal sco
 #### Use case 2: Improving the Replicability of DR Benchmarks
 
 
+The followings are the scripts to evaluate the replicability of DR benchmarks guided by our metrics (use case 2). The first script is used to execute the evaluation, and the second script is used to aggregate the results as a single file.
 
-
-
------------------
-
-
-
-## 3. Applications
-### Application 01: Predicting Maximum Accuracy of DR Techniques
-**Warning**: Activate the `venv-autosklearn` environment to run this.
-
-- Predicting Maximum Accuracy of DR Techniques:
 ```bash
-python3 app/02_01_prediction.py 
-```
-- Enhancing Efficiency of DR Optimization:
-```bash
-python3 app/02_02_optimization.py
-```
-- Test and Convert to DataFrame:
-```bash
-python3 app/02_03_test_and_to_df.py
+python3 -m app.02_01_evaluation 
+python3 -m app.02_02_aggregate
 ```
 
-#### Result and Discussion
-The results indicate that interrupting iterations based on estimated optimal scores exhibit a substantial reduction in execution time compared to running optimization with a fixed number of iterations.
+The script will produce the results of the evaluation in the `app/results/` directory.
 
-<p align="center">    <img src="figs/Table2.png" style="width: 50%; height: auto;"/>
-</p>
-<p align="center">    <img src="figs/Figure2.png" style="width: 50%; height: auto;"/>
-</p>
-
-### Application 02
-Improve the replicability of DR benchmarks:
-```bash
-python3 app/03_01_evaluation.py
-python3 app/03_02_cleanup.py
-```
-
-#### Result and Discussion
-Table 3 depicts the results. +global 916 & −local, −local, and +global improve the replicability of the 917 DR benchmark using local evaluation metrics (T&C, MRREs).
+**(Result and Discussion)**
+Table 3 depicts the results. 
 
 <p align="center">    <img src="figs/Table3.png" style="width: 50%; height: auto;"/>
 </p>
 
-## 4. Deactivate the Virtual Environment
-```bash
-deactivate
-```
