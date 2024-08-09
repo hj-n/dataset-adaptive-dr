@@ -31,20 +31,20 @@ DR_METRICS = ["tnc_25", "mrre_25", "l_tnc_0", "srho_0", "pr_0"]
 DR_TECHNIQUES = ["umap", "tsne", "pca", "lle", "isomap", "umato"]
 
 SOURCES = [
-	# "/intrinsic_dim/embedding_intdim",
-	# "/intrinsic_dim/geometric_intdim",
+	"/intrinsic_dim/embedding_intdim",
+	"/intrinsic_dim/geometric_intdim",
 	"/reducibility/mnc_25",
-	# "/reducibility/mnc_50",
+	"/reducibility/mnc_50",
 	"/reducibility/mnc_75",
 	"/reducibility/mnc_100",
-	# "/reducibility/pds",
+	"/reducibility/pds",
 ]
 
 source_names = {
-	# "/intrinsic_dim/embedding_intdim": "projection_intdim",
-	# "/intrinsic_dim/geometric_intdim": "geometric_intdim",
+	"/intrinsic_dim/embedding_intdim": "projection_intdim",
+	"/intrinsic_dim/geometric_intdim": "geometric_intdim",
 	"/reducibility/mnc_25": "mnc_25",
-	# "/reducibility/mnc_50": "mnc_50",
+	"/reducibility/mnc_50": "mnc_50",
 	"/reducibility/mnc_75": "mnc_75",
 	"/reducibility/mnc_100": "mnc_100",
 }

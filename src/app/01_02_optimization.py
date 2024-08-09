@@ -15,7 +15,7 @@ DR_METRIC = "tnc_25"
 DR_TECHNIQUE = "umap"
 pbounds = { "n_neighbors": (2, 200), "min_dist": (0.001, 0.999) }
 
-DATA_POINT_MAXNUM = 2000
+DATA_POINT_MAXNUM = 3000
 
 spec = [{ "id": "tnc", "params": { "k": 25} }]
 measure_names = ["trustworthiness", "continuity"]

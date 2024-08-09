@@ -97,14 +97,14 @@ for dr_metric in DR_METRICS:
 		spearmanr_plue_list = []
 		spearmanr_minus_list = []
 		spearmanr_zero_list = []
-		for idx in tqdm(range(10)):
+		for idx in tqdm(range(20)):
 			## pick random 20 datasets from the entire dataset list
 			Prandom_datasets = np.random.choice(DATASET_LIST, 20, replace=False)
 
 			Pplus_rankings = []
 			Pminus_rankings = []
 			Prandom_rankings = []
-			for jdx in range(30):
+			for jdx in range(50):
 
 			## pick random 10 datasets from Pplus and Pminus
 				Pplus_sampled = np.random.choice(Pplus_datasets, 10, replace=False)
@@ -115,8 +115,8 @@ for dr_metric in DR_METRICS:
 				Pminus_rankings.append(extract_ranking(Pminus_sampled, dr_metric))
 				Prandom_rankings.append(extract_ranking(Prandom_sampled, dr_metric))
 			
-			for ii in range(30):
-				for jj in range(ii + 1, 30):
+			for ii in range(50):
+				for jj in range(ii + 1, 50):
 					spearmanr_plus, _ = spearmanr(Pplus_rankings[ii], Pplus_rankings[jj])
 					spearmanr_minus, _ = spearmanr(Pminus_rankings[ii], Pminus_rankings[jj])
 					spearmanr_zero, _ = spearmanr(Prandom_rankings[ii], Prandom_rankings[jj])
