@@ -11,6 +11,8 @@ from tqdm import tqdm
 DATASET_PATH = "../labeled-datasets/npy/"
 DATASET_LIST = os.listdir(DATASET_PATH)
 
+
+
 DR_METRIC = "tnc_25"
 DR_TECHNIQUE = "umap"
 pbounds = { "n_neighbors": (2, 200), "min_dist": (0.001, 0.999) }
@@ -42,15 +44,29 @@ for idx in tqdm(range(10)):
 		if os.path.exists(f"./app/results/optimization/{idx}_{dataset}.json"):
 			continue
 
+		if dataset not in [
+			"ecoli"
+			# "cifar10",
+			# "image_segmentation",
+			# "mobile_price_classification",
+			# "yeast",
+			# "rice_dataset_cammeo_and_osmancik",
+			# "har",
+			# "breast_cancer_wisconsin_original"
+		]:
+			continue
 
+		print(dataset)
 		predicted_acc = predicted_tnc[dataset]["prediction"]
 		if (predicted_acc > 0.99):
 			predicted_acc = 0.99
 
 		data = load_dataset(os.path.join(DATASET_PATH, dataset +  "/data.npy"))
+		label = load_dataset(os.path.join(DATASET_PATH, dataset + "/label.npy"))
 		if data.shape[0] > DATA_POINT_MAXNUM:
 			filterer= np.random.choice(data.shape[0], DATA_POINT_MAXNUM, replace=False)
 			data = data[filterer]
+			label = label[filterer]
 		if DR_TECHNIQUE == "umap":
 			zadu_obj = zadu.ZADU(spec, data)
 			def run_method(n_neighbors, min_dist):
@@ -78,6 +94,11 @@ for idx in tqdm(range(10)):
 		end = time.time()
 
 		score = optimizer.max['target']
+		hp = optimizer.max['params']
+
+		## run umap with the best hyperparameters
+		projection = umap.UMAP(n_neighbors=int(hp["n_neighbors"]), min_dist=hp["min_dist"]).fit_transform(data)
+
 		time_used = end - start
 
 		optimizer = BayesianOptimization(
@@ -98,6 +119,11 @@ for idx in tqdm(range(10)):
 		end = time.time()
 
 		pred_score = optimizer.max['target']
+
+		hp = optimizer.max['params']
+
+		pred_projection = umap.UMAP(n_neighbors=int(hp["n_neighbors"]), min_dist=hp["min_dist"]).fit_transform(data)
+
 		pred_time_used = end - start
 
 		result = {
@@ -111,6 +137,15 @@ for idx in tqdm(range(10)):
 
 		with open(f"./app/results/optimization/{idx}_{dataset}.json", "w") as f:
 			json.dump(result, f)
+
+		with open(f"./app/results/optimization_projection/{idx}_{dataset}_true.json", "w") as f:
+			json.dump(projection.tolist(), f)
+		
+		with open(f"./app/results/optimization_projection/{idx}_{dataset}_pred.json", "w") as f:
+			json.dump(pred_projection.tolist(), f)
+		
+		with open(f"./app/results/optimization_label/{idx}_{dataset}.json", "w") as f:
+			json.dump(label.tolist(), f)
 
 		## save the score to a file
 
