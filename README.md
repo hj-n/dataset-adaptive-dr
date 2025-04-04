@@ -139,10 +139,9 @@ bash run.sh
 - `03_train.py`: Train models using metrics as features
 - `04_evaluate.py`: Evaluate correlation with DR performance
 
-**Expected Output:** Raw files for accuracy prediction performance, ID correlations, etc.
-
+**Results:**
 ![Table 1: Accuracy of structural complexity metrics](figs/Table1.png)
-![Figure 3: Runtime of structural complexity metrics](figs/Fig3.png)
+![Figure 3: Runtime of structural complexity metrics](figs/Figure3.png)
 
 ---
 
@@ -162,10 +161,9 @@ bash run.sh
 - `02_evaluate_predicting_dr.py`: Evaluate ability to guide DR method selection
 - `03_evaluate_early_stop.py`: Evaluate optimization efficiency with early stopping
 
-**Expected Output:** DR technique selection results, optimization runtime logs
-
+**Results:**
 ![Table 2: Accuracy of baseline metrics and PDS+MNC](figs/Table2.png)
-![Figure 4: Distribution of correlations](figs/Fig4.png)
+![Figure 4: Distribution of correlations](figs/figure4.png)
 ---
 
 ### Experiment 3 — Workflow Comparison
@@ -179,5 +177,5 @@ cd exp/exp3_workflow_comparison
 python evaluate_workflow_improvement.py
 ```
 
-**Expected Output:** Comparison tables and figures for accuracy, runtime, and efficiency
-![Figure 6: Comparison of the performance of three workflows](figs/Fig6.png)
+**Results:**
+![Figure 6: Comparison of the performance of three workflows](figs/Figure6.png)
