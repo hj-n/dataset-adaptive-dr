@@ -140,8 +140,11 @@ bash run.sh
 - `04_evaluate.py`: Evaluate correlation with DR performance
 
 **Results:**
-![Table 1: Accuracy of structural complexity metrics](figs/Table1.png)
-![Figure 3: Runtime of structural complexity metrics](figs/Figure3.png)
+<p align="center">    
+<img src="figs/Table1.png" style="width: 50%; height: auto;"/>
+</p><p align="center">    
+<img src="figs/Figure3.png" style="width: 50%; height: auto;"/>
+</p>
 
 ---
 
@@ -162,8 +165,12 @@ bash run.sh
 - `03_evaluate_early_stop.py`: Evaluate optimization efficiency with early stopping
 
 **Results:**
-![Table 2: Accuracy of baseline metrics and PDS+MNC](figs/Table2.png)
-![Figure 4: Distribution of correlations](figs/figure4.png)
+<p align="center">    
+<img src="figs/Table2.png" style="width: 50%; height: auto;"/>
+</p>
+<p align="center">    
+<img src="figs/Figure4.png" style="width: 50%; height: auto;"/>
+</p>
 ---
 
 ### Experiment 3 — Workflow Comparison
@@ -178,4 +185,6 @@ python evaluate_workflow_improvement.py
 ```
 
 **Results:**
-![Figure 6: Comparison of the performance of three workflows](figs/Figure6.png)
+<p align="center">    
+<img src="figs/Figure6.png" style="width: 50%; height: auto;"/>
+</p>
