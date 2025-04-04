@@ -66,6 +66,7 @@ data = np.random.rand(100, 5)
 labels = np.random.rand(100)
 
 model = train_model(data, labels, config={"epochs": 10, "lr": 0.001})
+model.save("./regression_model.pkl")
 ```
 
 ### Early terminating optimzation
@@ -78,16 +79,17 @@ Predict performance for each technique and skip those with low expected accuracy
 **Step 2 — Early Stopping**
 
 Stop hyperparameter tuning once predicted performance is reached.
+
 ```python
-from src.opt_early_stop import EarlyStopper
+from src.opt_early_stop import load_model, run_optimization
+import numpy as np
 
-stopper = EarlyStopper(patience=3, delta=0.01)
+data = np.random.rand(100, 5)
+model = load_model("./saved_model.pkl")
+output = run_optimization(data, model, technique="UMAP")
 
-for epoch in range(100):
-    val_score = evaluate_model(...)
-    if stopper.should_stop(val_score):
-        print("Early stopping triggered.")
-        break
+print(f"Final Accuracy: {output['accuracy']:.3f}")
+print(f"Optimization Steps: {output['steps']}")
 ```
 
 # Reproducing the Experiments
