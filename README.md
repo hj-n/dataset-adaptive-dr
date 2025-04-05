@@ -1,16 +1,20 @@
 <p align="center">
-  <h2 align="center">Structural Complexity Metrics</h2>
+  <h2 align="center">Dataset-Adaptive Workflow for Optimizing Dimensionality Reduction</h2>
 	<p align="center">Repository for the paper <i>Dataset-Adaptive Dimensionality Reduction</i></p>
 </p>
 
 ---
 
-We introduce two structural complexity metrics, Pairwise Distance Shift (PDS) and Mutual Neighbor Consistency (MNC), which are designed to quantify the maximum achievable structural consistency between high-dimensional (HD) datasets and their 2D projections. These metrics guide dimensionality reduction (DR) by predicting optimal iteration numbers, reducing computational costs, and improving the reliability of DR benchmarks. Experiments on 96 real-world datasets validate that MMC and PDS enhance DR benchmark and optimization processes' accuracy and efficiency.
+We introduce the *Dataset-Adaptive workflow* for optimizing dimensionality reduction (DR) techniques, which improves the efficiency of the optimization without comproming the accuracy.
+The workflow is based on two *structural complexity metrics*, Pairwise Distance Shift (PDS) and Mutual Neighbor Consistency (MNC).
+Our approach is built upon the previous findings that certain patterns are more prominent in HD data.
+Based on this finding, our approach first quantifies the prominence of these patterns to estimate the difficulty of accurately projecting the data into lower-dimensional spaces. We
+introduce structural complexity metrics to measure these patterns, and use these scores to predict the maximum accuracy achievable by DR techniques.
+The metrics thus enhance the efficiency of DR optimization by (1) guiding the selection of an appropriate DR technique for a given dataset and (2) enabling early termination of optimization once near-optimal hyperparameters have been reached, avoiding unnecessary computations.
+
+In this repository, we provide the implementation of two structural complexity metrics and the dataset-adaptive workflow. We also provide the code to reproduce the experiments in our paper.
 
 
-This repository provides:
-1. Implementation of the two structural complexity metrics: PDS and MNC
-2. Codes for reproducing the experiments in the related academic paper
 
 ### Requirements
 
@@ -26,37 +30,56 @@ conda activate complexity
 pip install -r requirements.txt
 ```
 
-# Structrual Complexity Metrics
-Located in [`/src/metrics/`](src/metrics):
-- `pds.py`: Pairwise Distance Shift (global structure)
-- `mnc.py`: Mutual Neighbor Consistency (local structure)
 
-### PDS (Pairwise Distance Shift) Example
-``` python
-from src.metrics.pds import pairwise_distance_shift
-import numpy as np
+## Dataset-Adaptive Workflow
 
-data = np.random.rand(100, 5)
-shift_value = pairwise_distance_shift(data)
-print(f"PDS: {shift_value:.3f}")
-```
+The `/src` directory contains the implementation of the dataset-adaptive workflow. First, `pretrain.py` trains a regression model to predict the maximum achievable accuracy of DR techniques from complexity scores. The `opt.py` file implements the early stopping optimization process, which uses the trained model to guide the selection of DR techniques and stop hyperparameter tuning once the predicted performance is reached.
+The `/src/metrics` directory contains the implementation of the two structural complexity metrics, PDS and MNC. The `pds.py` file implements the Pairwise Distance Shift metric, while the `mnc.py` file implements the Mutual Neighbor Consistency metric.
 
 
-### MNC (Mutual Neighbor Consistency) Example
-```python
-from src.metrics.mnc import mutual_neighbor_consistency
-import numpy as np
+### `pretrain.py`
 
-data = np.random.rand(100, 5)
-consistency_value = mutual_neighbor_consistency(data, k=5)
-print(f"MNC: {consistency_value:.3f}")
-```
 
-# Workflow
 
-### Pretraining
-Trains models that predict the maximum achievable accuracy of DR techniques from complexity scores.
-These predictors guide downstream optimization and selection.
+
+### `opt.py`
+
+### `modules/opt_conv.py`
+
+Optimize dimensionality reduction (DR) techniques using a conventional approach to find the best hyperparameters (Bayesian optimization with a fixed number of hyperparameters).
+
+
+### `metrics/mnc.py`
+
+#### `mutual_neighbor_consistency(data, k)`
+
+Computes **Mutual Neighbor Consistency**, a local structure-based complexity metric.  
+Measures the cosine similarity between k-NN and SNN similarity vectors.
+
+**Parameters**
+- `data` (`np.ndarray`): Input data of shape `(n_samples, n_features)`.
+- `k` (`int`): Number of nearest neighbors.
+
+**Returns**
+- `float`: Average mutual neighbor consistency (range: 0–1).
+
+### `metrics/pds.py`
+
+#### `pairwise_distance_shift(data)`
+
+Computes **Pairwise Distance Shift**, a global structure-based complexity metric.  
+Measures the normalized dispersion of pairwise distances using a log-ratio of std to mean.
+
+**Parameters**
+- `data` (`np.ndarray`): Input data of shape `(n_samples, n_features)`.
+
+**Returns**
+- `float`: Pairwise distance shift value (higher means more globally structured).
+
+여기까지 완료
+--------
+
+
 
 ```python
 from src.pretrain import train_model
@@ -91,6 +114,38 @@ output = run_optimization(data, model, technique="UMAP")
 print(f"Final Accuracy: {output['accuracy']:.3f}")
 print(f"Optimization Steps: {output['steps']}")
 ```
+
+
+
+# Structrual Complexity Metrics
+Located in [`/src/metrics/`](src/metrics):
+- `pds.py`: Pairwise Distance Shift (global structure)
+- `mnc.py`: Mutual Neighbor Consistency (local structure)
+
+### PDS (Pairwise Distance Shift) Example
+``` python
+from src.metrics.pds import pairwise_distance_shift
+import numpy as np
+
+data = np.random.rand(100, 5)
+shift_value = pairwise_distance_shift(data)
+print(f"PDS: {shift_value:.3f}")
+```
+
+
+### MNC (Mutual Neighbor Consistency) Example
+```python
+from src.metrics.mnc import mutual_neighbor_consistency
+import numpy as np
+
+data = np.random.rand(100, 5)
+consistency_value = mutual_neighbor_consistency(data, k=5)
+print(f"MNC: {consistency_value:.3f}")
+```
+
+# Workflow
+
+### Pretraining
 
 # Reproducing the Experiments
 

@@ -1,0 +1,12 @@
+DATASET_PATH: "../labeled-datasets/npy/"
+MAX_POINTS: 3000
+DR:
+  - pca
+  - umap
+  - tsne
+  - umato
+  - lle
+  - isomap
+METRICS:
+  - tnc
+  - params
