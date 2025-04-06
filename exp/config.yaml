@@ -5,7 +5,7 @@ MAX_ITER: 15
 DR:
   - pca
   - umap
-  - tsne
+  # - tsne
   # - umato
   # - lle
   # - isomap
@@ -37,3 +37,6 @@ METRICS:
   #   names:
   #     - pearson_r
   #   is_higher_better: True
+
+# REGRESSION_ITER: 100
+REGRESSION_ITER: 2

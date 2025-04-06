@@ -29,7 +29,6 @@ DATA_POINT_MAXNUM = lc.load_config("MAX_POINTS")
 mnc_25_scores = []
 mnc_50_scores = []
 mnc_75_scores = []
-mnc_100_scores = []
 pds_scores = []
 projection_intdim_scores = []
 geometric_intdim_scores = []
@@ -37,7 +36,6 @@ geometric_intdim_scores = []
 mnc_25_times = []
 mnc_50_times = []
 mnc_75_times = []
-mnc_100_times = []
 pds_times = []
 projection_intdim_times = []
 geometric_intdim_times = []
@@ -73,10 +71,6 @@ for dataset_name in tqdm(DATASET_LIST):
 	mnc_75_times.append(timed)
 
 
-	timed, scores = return_score_and_time(lambda x: mnc(x, 100), data)
-	mnc_100_scores.append(scores)
-	mnc_100_times.append(timed)
-
 	timed, scores = return_score_and_time(lambda x: pds(x), data)
 	pds_scores.append(scores)
 	pds_times.append(timed)
@@ -108,7 +102,6 @@ if not os.path.exists("./exp/exp1_metrics/results/metrics/"):
 save_result(mnc_25_scores, mnc_25_times, "./exp/exp1_metrics/results/metrics/mnc_25.json")
 save_result(mnc_50_scores, mnc_50_times, "./exp/exp1_metrics/results/metrics/mnc_50.json")
 save_result(mnc_75_scores, mnc_75_times, "./exp/exp1_metrics/results/metrics/mnc_75.json")
-save_result(mnc_100_scores, mnc_100_times, "./exp/exp1_metrics/results/metrics/mnc_100.json")
 save_result(pds_scores, pds_times, "./exp/exp1_metrics/results/metrics/pds.json")
 save_result(projection_intdim_scores, projection_intdim_times, "./exp/exp1_metrics/results/metrics/projection_intdim.json")
 save_result(geometric_intdim_scores, geometric_intdim_times, "./exp/exp1_metrics/results/metrics/geometric_intdim.json")

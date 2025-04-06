@@ -79,7 +79,8 @@ def opt_conv(
 		f=run_method,
 		pbounds=pbounds,
 		random_state=1,
-		allow_duplicate_points=True
+		allow_duplicate_points=True,
+		verbose=0
 	)
 
 	optimizer.maximize(init_points=init_points, n_iter=n_iter)
