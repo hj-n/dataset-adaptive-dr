@@ -1,6 +1,6 @@
 from scipy.spatial.distance import cdist, pdist
 import numpy as np
-from .knnsnn import DistMat as DistMat
+from .helpers.knnsnn import DistMat as DistMat
 from numba import cuda
 
 

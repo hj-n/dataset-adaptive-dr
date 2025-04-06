@@ -1,12 +1,39 @@
-DATASET_PATH: "../labeled-datasets/npy/"
-MAX_POINTS: 3000
+DATASET_PATH: "labeled-datasets/npy/"
+MAX_POINTS: 1000
+INIT_POINTS: 5
+MAX_ITER: 15
 DR:
   - pca
   - umap
   - tsne
-  - umato
-  - lle
-  - isomap
+  # - umato
+  # - lle
+  # - isomap
 METRICS:
-  - tnc
-  - params
+  - id: tnc
+    names:
+      - trustworthiness
+      - continuity
+    params: 
+      k: 25 
+    is_higher_better: True
+  - id: mrre
+    names:
+      - mrre_missing
+      - mrre_false
+    params: 
+      k: 25 
+    is_higher_better: True
+  # - id: l_tnc
+  #   names:
+  #     - label_trustworthiness
+  #     - label_continuity
+  #   is_higher_better: True
+  # - id: srho
+  #   names:
+  #     - spearman_rho
+  #   is_higher_better: True
+  # - id: pr
+  #   names:
+  #     - pearson_r
+  #   is_higher_better: True

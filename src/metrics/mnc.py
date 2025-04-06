@@ -1,4 +1,4 @@
-from .knnsnn import KnnSnn as ks
+from .helpers.knnsnn import KnnSnn as ks
 import numpy as np
 
 def mutual_neighbor_consistency(data, k):
