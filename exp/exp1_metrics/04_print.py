@@ -121,8 +121,6 @@ for dr_metric in DR_METRICS:
 	for metric in METRICS:
 		print("- metric: ", metric)
 		for regression_model in REGRESSION_MODELS:
-			## find row that as dr_metric as dr_metric, metric as competitor, 
-			## and regression_model as regression_model
 			row = scores_df[
 				(scores_df["dr_metric"] == dr_metric["id"]) &
 				(scores_df["competitor"] == metric) &

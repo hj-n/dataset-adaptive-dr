@@ -1,12 +1,13 @@
 DATASET_PATH: "labeled-datasets/npy/"
-MAX_POINTS: 1000
-INIT_POINTS: 5
-MAX_ITER: 15
+MAX_POINTS: 500
+# MAX_POINTS: 3000
+INIT_POINTS: 2
+MAX_ITER: 4
 DR:
   - pca
   - umap
-  # - tsne
-  # - umato
+  - tsne
+  - umato
   # - lle
   # - isomap
 METRICS:
@@ -40,3 +41,12 @@ METRICS:
 
 # REGRESSION_ITER: 100
 REGRESSION_ITER: 2
+TEST_SIZE: 16
+TRAINING_SIZE: 80
+TRAINING:
+  # SINGLE_TASK_TIME: 30
+  # TOTAL_TASK_TIME: 600
+  single_task_time: 10
+  total_task_time: 50
+  memory_limit: 10000
+  cv_fold: 5
