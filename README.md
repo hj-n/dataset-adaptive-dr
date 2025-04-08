@@ -196,15 +196,15 @@ The **`exp/exp2_metrics_workflow`** folder evaluates whether the structural‑co
 > python3 -m exp.exp2_metrics_workflow.02_print
 > ```
 >
-> The script will iterate over three complexity‑metric configurations (`pdsmnc`, `intdim_proj`, `intdim_geo`) and every DR evaluation metric defined in your `exp/config.json`.
+> The script will iterate over three complexity metric and baseline configurations (`pdsmnc`, `intdim_proj`, `intdim_geo`) and every DR evaluation metric defined in your `exp/config.json`.
 
 #### What is measured?
 
 | Aspect | Output file(s) | Meaning |
 | ------ | -------------- | ------- |
-| **Accuracy** | `exp1_correlations.json` | R² between predicted and ground‑truth maximum accuracy for each DR technique. |
+| **Predictive Power** | `exp1_correlations.json` | R² between predicted and ground‑truth maximum accuracy for each DR technique. |
 | **Recommendation Quality** | `exp2_top_1_accuracy.json`, `exp2_top_3_accuracy.json` | Fraction of test datasets where the true best (top‑1) or any of the true top‑3 DR techniques appear in the model’s recommendations. |
-| **Scalability** | `exp3_opt_time.json`, `exp3_gt_time.json`, `exp3_opt_score.json`, `exp3_gt_score.json` | Runtime speed‑up achieved by early termination (opt/gt) and the corresponding quality ratio (opt_score/gt_score). |
+| **Effectiveness of Early Termination** | `exp3_opt_time.json`, `exp3_gt_time.json`, `exp3_opt_score.json`, `exp3_gt_score.json` | Runtime speed‑up achieved by early termination (opt/gt) and the corresponding quality ratio (opt_score/gt_score). |
 
 #### Expected output structure
 
