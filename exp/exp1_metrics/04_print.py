@@ -1,129 +1,180 @@
-import pandas as pd 
+"""
+Print Experiment 1 results
+--------------------------
+Evaluation A. Runtime
+  • Average ± std of execution time for each complexity metric
+    (mnc, pds, pdsmnc, geometric_intdim, projection_intdim, dr_ensemble)
+
+Evaluation B. Predictive Power
+  • R² values of each complexity metric (competitor) when predicting
+    ground‑truth structural complexity produced by every DR evaluation metric,
+    for five regression models (linear, polynomial, knn, rf, gb).
+
+Directory layout assumed
+------------------------
+exp/exp1_metrics/results/
+    ├─ metrics/
+    │    ├─ mnc_25.json , mnc_50.json , mnc_75.json
+    │    ├─ pds.json
+    │    ├─ geometric_intdim.json
+    │    └─ projection_intdim.json
+    ├─ ground_truth/<dr_tech>/<dr_metric_id>/<dataset>.json   # for dr_ensemble time
+    └─ final/
+         ├─ runtime.csv        # (written by previous code; not used here)
+         └─ correlations.csv   # columns: dr_metric, competitor, regression_model, r2
+"""
+
+import json
+import csv
+import math
+from pathlib import Path
+import numpy as np
 import exp.load_config as lc
 import src.modules.load as l
-import json
-import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 
-
+# ------------------------------------------------------------------------------
+# Config & helper functions
+# ------------------------------------------------------------------------------
+BASE_METRIC_DIR = Path("exp/exp1_metrics/results/metrics")
+GROUND_DIR      = Path("exp/exp1_metrics/results/ground_truth")
+CORR_CSV        = Path("exp/exp1_metrics/results/final/correlations.csv")
 
 DR_TECHNIQUES = lc.load_config("DR")
-DR_METRICS = lc.load_config("METRICS")
-DR_METRIC_ID = lc.load_config("METRICS")[0]["id"]
-
-DATASET_PATH = lc.load_config("DATASET_PATH")
-DATASET_LIST = l.load_names(DATASET_PATH)
+DR_METRICS    = lc.load_config("METRICS")          # list of dicts with "id"
+DATASET_PATH  = lc.load_config("DATASET_PATH")
+DATASET_LIST  = l.load_names(DATASET_PATH)
 
 REGRESSION_MODELS = {
-	"linear": "Linear Regression",
-	"polynomial": "Polynomial Regression",
-	"knn": "KNN",
-	"rf": "Random Forest",
-	"gb": "Gradient Boosting"
+    "linear":      "Linear Regression",
+    "polynomial":  "Polynomial Regression",
+    "knn":         "KNN",
+    "rf":          "Random Forest",
+    "gb":          "Gradient Boosting"
 }
 
+# Complexity metrics we handle
+METRICS_TIME = {
+    "mnc":                ["mnc_25.json"],                       # single file
+    "pds":                ["pds.json"],
+    "pdsmnc":             ["mnc_25.json", "mnc_50.json", "mnc_75.json", "pds.json"],
+    "geometric_intdim":   ["geometric_intdim.json"],
+    "projection_intdim":  ["projection_intdim.json"],
+}
 
-METRICS = ["mnc", "pds", "pdsmnc", "geometric_intdim", "projection_intdim", "dr_ensemble"]
+# ------------------------------------------------------------------------------
+# Utility
+# ------------------------------------------------------------------------------
+def load_json(path):
+    """Return JSON content or None on failure."""
+    try:
+        with open(path, "r") as f:
+            return json.load(f)
+    except Exception:
+        return None
 
-mnc_time          = []
-pds_time          = []
-pdsmnc_time       = []
-geometric_intdim_time  = []
-projection_intdim_time = []
-dr_ensemble_time   = []
+def stats(arr):
+    """Return mean ± std formatted; arr is list[float]."""
+    if not arr:
+        return "nan ± nan"
+    return f"{np.mean(arr):.4f} ± {np.std(arr):.4f}"
 
-#### TIME ####
+# ------------------------------------------------------------------------------
+# Evaluation A – Runtime
+# ------------------------------------------------------------------------------
+def compute_runtime():
+    """Return dict {metric: [times per dataset]} and dr_ensemble times list."""
+    runtimes = {m: [] for m in METRICS_TIME}
+    dr_ensemble_time = []
 
-## mnc
-with open(f"exp/exp1_metrics/results/metrics/mnc_25.json") as f:
-	mnc_time_json = json.load(f)
-	for dataset in DATASET_LIST:
-		mnc_time.append(mnc_time_json[dataset]["time"])
+    # Pre‑load JSONs for speed
+    cache = {}
+    for files in METRICS_TIME.values():
+        for fname in files:
+            if fname not in cache:
+                cache[fname] = load_json(BASE_METRIC_DIR / fname)
 
-## pds
-with open(f"exp/exp1_metrics/results/metrics/pds.json") as f:
-	pds_time_json = json.load(f)
-	for dataset in DATASET_LIST:
-		pds_time.append(pds_time_json[dataset]["time"])
+    for ds in DATASET_LIST:
+        # Each complexity metric
+        for metric, files in METRICS_TIME.items():
+            total = 0.0
+            for fname in files:
+                json_obj = cache.get(fname, {})
+                total += json_obj.get(ds, {}).get("time", math.nan)
+            runtimes[metric].append(total)
 
-## pdsmnc
-with open("exp/exp1_metrics/results/metrics/mnc_25.json") as f:
-	mnc_25_time_json = json.load(f)
-with open("exp/exp1_metrics/results/metrics/mnc_50.json") as f:
-	mnc_50_time_json = json.load(f)
-with open("exp/exp1_metrics/results/metrics/mnc_75.json") as f:
-	mnc_75_time_json = json.load(f)
-with open("exp/exp1_metrics/results/metrics/pds.json") as f:
-	pds_time_json = json.load(f)
+        # dr_ensemble time (sum of all DR techniques for the first DR_METRIC only)
+        dr_metric_id = DR_METRICS[0]["id"]
+        total_t = 0.0
+        for tech in DR_TECHNIQUES:
+            gt_path = GROUND_DIR / tech / dr_metric_id / f"{ds}.json"
+            obj = load_json(gt_path) or {}
+            total_t += obj.get("time", math.nan)
+        dr_ensemble_time.append(total_t)
 
-for dataset in DATASET_LIST:
-	pdsmnc_time.append(
-		mnc_25_time_json[dataset]["time"] +
-		mnc_50_time_json[dataset]["time"] +
-		mnc_75_time_json[dataset]["time"] +
-		pds_time_json[dataset]["time"]
-	)
+    runtimes["dr_ensemble"] = dr_ensemble_time
+    return runtimes
 
-### geometric_intimd
-with open(f"exp/exp1_metrics/results/metrics/geometric_intdim.json") as f:
-	geometric_intimd_json = json.load(f)
-	for dataset in DATASET_LIST:
-		geometric_intdim_time.append(geometric_intimd_json[dataset]["time"])
+# ------------------------------------------------------------------------------
+# Evaluation B – Predictive Power
+# ------------------------------------------------------------------------------
+def load_correlations():
+    """
+    Parse correlations.csv into nested dict:
+      corr[dr_metric_id][competitor][reg_model] = r2_value
+    """
+    corr = {}
+    if not CORR_CSV.exists():
+        return corr
 
-### projection_intimd
-with open(f"exp/exp1_metrics/results/metrics/projection_intdim.json") as f:
-	projection_intimd_json = json.load(f)
-	for dataset in DATASET_LIST:
-		projection_intdim_time.append(projection_intimd_json[dataset]["time"])
+    with open(CORR_CSV, newline="") as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            dr_m   = row["dr_metric"]
+            comp   = row["competitor"]
+            reg    = row["regression_model"]
+            r2     = float(row["r2"])
+            corr.setdefault(dr_m, {}).setdefault(comp, {})[reg] = r2
+    return corr
 
+# ------------------------------------------------------------------------------
+# Main printing
+# ------------------------------------------------------------------------------
+def main():
+    # ===== Evaluation A =====
+    print("#" * 90)
+    print("EVALUATION A – Runtime")
+    print("#" * 90)
 
-### DR Ensemble
+    runtimes = compute_runtime()
+    for metric, times in runtimes.items():
+        print(f"{metric:<20}: {stats(times)}")
 
-for dataset in DATASET_LIST:
-	curr_time = 0
-	for dr_techniques in DR_TECHNIQUES:
-		with open(f"exp/exp1_metrics/results/ground_truth/{dr_techniques}/{DR_METRIC_ID}/{dataset}.json") as f:
-			dr_ensemble_time_json = json.load(f)
-			curr_time += dr_ensemble_time_json["time"]
-	dr_ensemble_time.append(curr_time)
+    # ===== Evaluation B =====
+    print("\n" + "#" * 90)
+    print("EVALUATION B – Predictive Power (R²)")
+    print("#" * 90)
 
-print("==== Average RUNTIME for each metric ====")
-print("mnc: ", np.mean(mnc_time), "+-", np.std(mnc_time))
-print("pds: ", np.mean(pds_time), "+-", np.std(pds_time))
-print("pdsmnc: ", np.mean(pdsmnc_time), "+-", np.std(pdsmnc_time))
-print("geometric_intimd: ", np.mean(geometric_intdim_time), "+-", np.std(geometric_intdim_time))
-print("projection_intimd: ", np.mean(projection_intdim_time), "+-", np.std(projection_intdim_time))
-print("dr_ensemble: ", np.mean(dr_ensemble_time), "+-", np.std(dr_ensemble_time))
+    corr = load_correlations()
+    if not corr:
+        print("correlations.csv not found or empty.")
+        return
 
-## save results
+    # Loop over ground‑truth DR metrics
+    for dr in DR_METRICS:
+        dr_id = dr["id"]
+        print(f"\nGround truth based on DR metric: {dr_id}")
 
-df = pd.DataFrame({
-	"dataset": DATASET_LIST,
-	"mnc_time": mnc_time,
-	"pds_time": pds_time,
-	"pdsmnc_time": pdsmnc_time,
-	"geometric_intimd_time": geometric_intdim_time,
-	"projection_intimd_time": projection_intdim_time,
-	"dr_ensemble_time": dr_ensemble_time
-})
-df.to_csv("exp/exp1_metrics/results/final/runtime.csv", index=False)
+        # Loop over regression models
+        for reg_key, reg_name in REGRESSION_MODELS.items():
+            print(f"  {reg_name}:")
+            # Loop over competitors (metrics) – sorted for consistency
+            for comp in sorted(corr.get(dr_id, {})):
+                r2 = corr[dr_id][comp].get(reg_key, float("nan"))
+                val = f"{r2:.4f}" if not math.isnan(r2) else "nan"
+                print(f"    {comp:<20} {val}")
+    print()
 
-#### SCORE ###
-
-scores_df = pd.read_csv("exp/exp1_metrics/results/final/correlations.csv")
-
-METRICS = ["mnc_25", "mnc_50", "mnc_75", "pds", "pdsmnc", "geometric_intdim", "projection_intdim"]
-
-
-print()
-print("==== Predictive Power for each metric towards Ground truth====")
-for dr_metric in DR_METRICS:
-	print("Ground truth based on: ", dr_metric["id"])
-	for metric in METRICS:
-		print("- metric: ", metric)
-		for regression_model in REGRESSION_MODELS:
-			row = scores_df[
-				(scores_df["dr_metric"] == dr_metric["id"]) &
-				(scores_df["competitor"] == metric) &
-				(scores_df["regression_model"] == regression_model)
-			]
-			print("--- ", REGRESSION_MODELS[regression_model], ": ", row["r2"].values[0])
+if __name__ == "__main__":
+    main()
