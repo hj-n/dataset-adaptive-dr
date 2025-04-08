@@ -10,7 +10,7 @@ from sklearn.preprocessing import StandardScaler
 
 import umap
 
-def intrinsic_dim_projection(data, K):
+def intrinsic_dim_projection(data, _=None):
 	pca = PCA(n_components=min(data.shape[0], data.shape[1]))
 	pca.fit(data)
 

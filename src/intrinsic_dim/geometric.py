@@ -11,7 +11,7 @@ from sklearn.preprocessing import StandardScaler
 
 
 
-def intrinsic_dim_geometric(data, _):
+def intrinsic_dim_geometric(data, _=None):
 
 	dist_matrix = cdist(data, data)
 

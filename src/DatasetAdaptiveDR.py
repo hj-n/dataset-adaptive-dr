@@ -1,10 +1,10 @@
-from metrics.mnc import mutual_neighbor_consistency as mnc
-from metrics.pds import pairwise_distance_shift as pds
-from intrinsic_dim.geometric import intrinsic_dim_geometric as intdim_geo
-from intrinsic_dim.projection import intrinsic_dim_projection as intdim_proj
+from .metrics.mnc import mutual_neighbor_consistency as mnc
+from .metrics.pds import pairwise_distance_shift as pds
+from .intrinsic_dim.geometric import intrinsic_dim_geometric as intdim_geo
+from .intrinsic_dim.projection import intrinsic_dim_projection as intdim_proj
 
-from modules.opt_conv import opt_conv
-from modules.train import train
+from .modules.opt_conv import opt_conv
+from .modules.train import train
 
 import numpy as np
 
@@ -86,7 +86,8 @@ class DatasetAdaptiveDR:
 		for dr_technique in self.dr_techniques:
 			self.models[dr_technique] = train(
 				self.source,
-				self.maximum_achievable_accuracy[dr_technique]
+				self.maximum_achievable_accuracy[dr_technique],
+				self.training_info
 			)
 	
 	def predict(self, data):
@@ -97,8 +98,15 @@ class DatasetAdaptiveDR:
 				mnc(data, 75),
 				pds(data)
 			]).reshape(1, -1)
-		else:
-			source = np.array([self.complexity_metric_scores]).reshape(1, -1)
+		elif self.complexity_metric == "intdim_proj":
+			source = np.array([intdim_proj(data)]).reshape(1, -1)
+		elif self.complexity_metric == "intdim_geo":
+			source = np.array([intdim_geo(data)]).reshape(1, -1)
+		elif self.complexity_metric == "mnc":
+			source = np.array([mnc(data, 25)]).reshape(1, -1)
+		elif self.complexity_metric == "pds":
+			source = np.array([pds(data)]).reshape(1, -1)
+
 		
 		results = {}
 		for dr_technique in self.dr_techniques:
