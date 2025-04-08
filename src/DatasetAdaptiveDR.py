@@ -44,9 +44,6 @@ class DatasetAdaptiveDR:
 			self.maximum_achievable_accuracy[technique] = []
 			self.models[technique] = None
 
-
-		
-
 		
 		if self.complexity_metric != "pdsmnc":
 			self.complexity_metric_scores = []
@@ -116,7 +113,32 @@ class DatasetAdaptiveDR:
 			results[dr_technique] = pred
 		return results
 			
+	def predict_opt(self, data, top_num=1, labels=None):
+		predicted_accuracy_results = self.predict(data)
+		opt_scores = {}
+		opt_params = {}
 
+		## top "top_num" dr techniques name
+		predicted_accuracy_ranking = sorted(predicted_accuracy_results.items(), key=lambda x: x[1], reverse=True)
+		dr_techniques_top = [x[0] for x in predicted_accuracy_ranking[:top_num]]
+
+		for dr_technique in dr_techniques_top:
+			predicted_accuracy = predicted_accuracy_results[dr_technique]
+			score, opt_params = opt_conv(
+				data,
+				dr_technique,
+				self.dr_metric,
+				self.dr_metric_names,
+				self.params,
+				self.init_points,
+				self.n_iter,
+				self.is_higher_better,
+				labels=labels,
+				early_termination=predicted_accuracy,
+			)
+			opt_scores[dr_technique] = score
+			opt_params[dr_technique] = opt_params
+		return opt_scores, opt_params
 
 	def _add_complexity_metric_score(self, data):
 		if self.complexity_metric == "mnc":

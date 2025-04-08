@@ -17,7 +17,8 @@ def opt_conv(
 	init_points=10, 				## number of initial points to sample; used for Bayesian optimization
 	n_iter=40, 							## number of iterations to sample; used for Bayesian optimization
 	is_higher_better=True,  ## True if the higher the better; False if the lower the better
-	labels = None 					## labels for the data points; used for evaluation if needed
+	labels = None, 					## labels for the data points; used for evaluation if needed
+	early_termination=None, ## early termination criteria; stalling if the optimization score exceeds the threshold
 ):
 	spec = [{ "id": measure, "params": params }]
 	zadu_obj = zadu.ZADU(spec, data)
@@ -83,7 +84,22 @@ def opt_conv(
 		verbose=0
 	)
 
-	optimizer.maximize(init_points=init_points, n_iter=n_iter)
+	# optimizer.maximize(init_points=init_points, n_iter=n_iter)
+
+	if early_termination is None:
+		optimizer.maximize(init_points=init_points, n_iter=n_iter)
+	else:
+		for i in range(init_points + n_iter):
+			optimizer.maximize(
+				init_points=1 if i < init_points else 0,
+				n_iter=1 if i >= init_points else 0,
+			)
+			if is_higher_better:
+				if optimizer.max["target"] <= early_termination:
+					break
+			else:
+				if 0 < optimizer.max["target"] < early_termination:
+					break
 
 	score = optimizer.max['target'] if is_higher_better else -optimizer.max['target']
 	opt_params = optimizer.max['params']
