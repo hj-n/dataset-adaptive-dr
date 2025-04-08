@@ -23,28 +23,18 @@ The `/src` directory contains the implementation of the dataset-adaptive workflo
 - **`modules/`** – workflow components:
   - `opt_conv.py`: unified hyperparameter‑optimization wrapper with early termination.
   - `train.py`: regression‑model training routine mapping complexity metrics to maximum achievable accuracy.
-- **`__pycache__/`** – Python’s byte‑code cache directories (can be ignored).
 
 This modular layout separates metric computation, optimization logic, and high‑level orchestration, making the library easy to extend and maintain.
 
 ### Requirements
 
-Python 3.9.5 or higher (we recommend to use Python 3.9.5 for reproducing the experiments).
 
-The requirements can be automatically installed by running
 
+Python 3.9.5 or higher (we recommend toe use Python 3.9.5 for reproducing the experiments).
+
+The requirements can be automatically installed by running:
 ```bash
-# 1 – Generate ground‑truth maximum accuracy for every dataset / DR technique / DR metric
-python -m exp.exp1_metrics.01_generate_ground_truth
-
-# 2 – Compute structural‑complexity metrics (MNC, PDS, intrinsic‑dim)
-python -m exp.exp1_metrics.02_compute_metrics
-
-# 3 – Train regression models that map complexity metrics → ground truth, saving R² scores
-python -m exp.exp1_metrics.03_train
-
-# 4 – Print summary tables (scalability + accuracy)
-python -m exp.exp1_metrics.04_print
+conda create --name complexity --file python==3.9.5 
 ```
 
 ### API Reference
@@ -138,16 +128,16 @@ The **`exp/exp1_metrics`** folder contains the full pipeline for Experiment 1 i
 >
 > ```bash
 > # 1 – Generate ground‑truth maximum accuracy for every dataset / DR technique / DR metric
-> python -m exp.exp1_metrics.01_generate_ground_truth
+> python3 -m exp.exp1_metrics.01_generate_ground_truth
 >
 > # 2 – Compute structural‑complexity metrics (MNC, PDS, intrinsic‑dim)
-> python -m exp.exp1_metrics.02_compute_metrics
+> python3 -m exp.exp1_metrics.02_compute_metrics
 >
 > # 3 – Train regression models that map complexity metrics → ground truth, saving R² scores
-> python -m exp.exp1_metrics.03_train
+> python3 -m exp.exp1_metrics.03_train
 >
 > # 4 – Print summary tables (scalability + accuracy)
-> python -m exp.exp1_metrics.04_print
+> python3 -m exp.exp1_metrics.04_print
 > ```
 >
 > **Tip** : `02_compute_metrics.py` selects a CUDA device via `cuda.select_device(1)`. Change the index to match your GPU setup, or comment the line out for CPU execution.
@@ -200,10 +190,10 @@ The **`exp/exp2_metrics_workflow`** folder evaluates whether the structural‑co
 >
 > ```bash
 > # 1 – Run the end‑to‑end evaluation (training, prediction, early‑stopping analysis)
-> python -m exp.exp2_metrics_workflow.01_evaluate
+> python3 -m exp.exp2_metrics_workflow.01_evaluate
 >
 > # 2 – Print consolidated results (accuracy, recommendation quality, scalability)
-> python -m exp.exp2_metrics_workflow.02_print
+> python3 -m exp.exp2_metrics_workflow.02_print
 > ```
 >
 > The script will iterate over three complexity‑metric configurations (`pdsmnc`, `intdim_proj`, `intdim_geo`) and every DR evaluation metric defined in your `exp/config.json`.
@@ -245,11 +235,11 @@ The **`exp/exp3_workflow_comparison`** folder asks a holistic question: *Does th
 > **Quick start**
 >
 > ```bash
-> # 1 – Evaluate the Dataset‑Adaptive workflow (Top‑1 / Top‑3 recommendations) against the ground‑truth baseline
-> python -m exp.exp3_workflow_comparison.01_evaluate
+> # 1 – Evaluate the Dataset‑Adaptive workflow (Top‑1 / Top‑3 recommendations from Dataset-adaptive DR) against the ground‑truth baseline
+> python3 -m exp.exp3_workflow_comparison.01_evaluate
 >
-> # 2 – Print aggregated statistics (quality + scalability)
-> python -m exp.exp3_workflow_comparison.02_print
+> # 2 – Print aggregated statistics (accuracy + scalability)
+> python3 -m exp.exp3_workflow_comparison.02_print
 > ```
 >
 > The script fixes the complexity‑metric configuration to **`pdsmnc`**—the best performer from Experiment 2—and iterates over every DR evaluation metric defined in `exp/config.json`.
@@ -258,7 +248,7 @@ The **`exp/exp3_workflow_comparison`** folder asks a holistic question: *Does th
 
 | Aspect | Metric | Output file(s) | Meaning |
 | ------ | ------ | -------------- | ------- |
-| **Quality** | Projection score | `top1_scores.json`, `top3_scores.json`, `gt_scores.json` | Best score obtained by the Top‑1 / Top‑3 Dataset‑Adaptive recommendations vs. the exhaustive ground‑truth search. |
+| **Accuracy** | Projection score | `top1_scores.json`, `top3_scores.json`, `gt_scores.json` | Best score obtained by the Top‑1 / Top‑3 Dataset‑Adaptive recommendations vs. the exhaustive ground‑truth search. |
 | **Scalability** | Optimization time (s) | `top1_times.json`, `top3_times.json`, `gt_times.json` | Wall‑clock time required to reach the above scores. |
 
 #### Expected output structure
