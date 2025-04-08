@@ -1,0 +1,48 @@
+DATASET_PATH: "labeled-datasets/npy/"
+MAX_POINTS: 3000
+INIT_POINTS: 10
+MAX_ITER: 40
+DR:
+  - pca
+  - umap
+  - tsne
+  - umato
+  - lle
+  - isomap
+METRICS:
+  - id: tnc
+    names:
+      - trustworthiness
+      - continuity
+    params: 
+      k: 25 
+    is_higher_better: True
+  - id: mrre
+    names:
+      - mrre_missing
+      - mrre_false
+    params: 
+      k: 25 
+    is_higher_better: True
+  - id: l_tnc
+    names:
+      - label_trustworthiness
+      - label_continuity
+    is_higher_better: True
+  - id: srho
+    names:
+      - spearman_rho
+    is_higher_better: True
+  - id: pr
+    names:
+      - pearson_r
+    is_higher_better: True
+
+REGRESSION_ITER: 10
+TEST_SIZE: 16
+TRAINING_SIZE: 80
+TRAINING_INFO:
+  single_task_time: 30
+  total_task_time: 600
+  memory_limit: 10000
+  cv_fold: 5

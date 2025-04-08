@@ -1,237 +1,274 @@
 <p align="center">
-  <h2 align="center">Structural Reducibility Metrics</h2>
-	<p align="center">Repository for the paper <i>Measuring the Structural Reducibility of Datasets for Fast and Accurate Dimensionality Reduction</i></p>
+  <h2 align="center">Dataset-Adaptive Workflow for Optimizing Dimensionality Reduction</h2>
+	<p align="center">Repository for the paper <i>Dataset-Adaptive Dimensionality Reduction</i></p>
 </p>
 
 ---
 
-We introduce two structural reducibility metrics, Pairwise Distance Shift (PDS) and Mutual Neighbor Consistency (MNC), which are designed to quantify the maximum achievable structural consistency between high-dimensional (HD) datasets and their 2D projections. These metrics guide dimensionality reduction (DR) by predicting optimal iteration numbers, reducing computational costs, and improving the reliability of DR benchmarks. Experiments on 96 real-world datasets validate that MMC and PDS enhance DR benchmark and optimization processes' accuracy and efficiency.
+We introduce the *Dataset-Adaptive workflow* for optimizing dimensionality reduction (DR) techniques, which improves the efficiency of the optimization without compromising the accuracy. The workflow is based on two *structural complexity metrics*, Pairwise Distance Shift (PDS) and Mutual Neighbor Consistency (MNC). Our approach is built upon the previous findings that certain patterns are more prominent in HD data. Based on this finding, our approach first quantifies the prominence of these patterns to estimate the difficulty of accurately projecting the data into lower-dimensional spaces. We introduce structural complexity metrics to measure these patterns and use these scores to predict the maximum accuracy achievable by DR techniques. The metrics thus enhance the efficiency of DR optimization by (1) guiding the selection of an appropriate DR technique for a given dataset and (2) enabling early termination of optimization once near-optimal hyperparameters have been reached, avoiding unnecessary computations.
+
+In this repository, we provide the implementation of two structural complexity metrics and the dataset-adaptive workflow. We also provide the code to reproduce the experiments in our paper.
 
 
-This repository provides:
-1. Implementation of the two structural reducibility metrics: PDS and MNC
-2. Codes for reproducing the experiments in the related academic paper
 
+### Dataset-Adaptive workflow
 
-## Structrual Reducibility Metrics
+The `/src` directory contains the implementation of the dataset-adaptive workflow. First, `DatasetAdaptiveDR.py` orchestrates the entire pipeline, exposing a high‑level API for adding datasets, training prediction models, and recommending optimal DR techniques and hyperparameters.
 
-The implementation of structural reducibility metrics (PDS, MNC) is provided under the directory `/src/reducibility/`. MNC and PDS are defined within `pds.py` and `mnc.py`, respectively. 
+- **`metrics/`** – complexity metric implementations:
+  - `pds.py`: computes **Pairwise Distance Shift (PDS)**, a global‑structure metric.
+  - `mnc.py`: computes **Mutual Neighbor Consistency (MNC)**, a local‑structure metric.
+  - `helpers/`: utility code (fast k‑NN/SNN) shared by the metrics.
+- **`intrinsic_dim/`** – optional intrinsic‑dimensionality estimators (`geometric.py`, `projection.py`) that can serve as alternative complexity metrics.
+- **`modules/`** – workflow components:
+  - `opt_conv.py`: unified hyperparameter‑optimization wrapper with early termination.
+  - `train.py`: regression‑model training routine mapping complexity metrics to maximum achievable accuracy.
+
+This modular layout separates metric computation, optimization logic, and high‑level orchestration, making the library easy to extend and maintain.
 
 ### Requirements
 
-- Python 3.8+
-- Numpy
-- Scipy
-- Numba
 
-The requirements can be automatically installed by creating the virtual environments (e.g., `conda`) and installing the main requirements:
+
+Python 3.9.5 or higher (we recommend toe use Python 3.9.5 for reproducing the experiments).
+
+The requirements can be automatically installed by running:
 ```bash
-conda create -n reducibility python==3.9.0
-conda activate reducibility
-pip install -r Requirements.txt
+conda create --name complexity --file python==3.9.5 
 ```
 
-### Specification
+### API Reference
 
-#### PDS (Pairwise Distance Shift)
+#### `DatasetAdaptiveDR`
 
-The `pairwise_distance_shift` function computes a complexity metric targeting the global structure of high-dimensional data. It evaluates the shift in pairwise distances within the dataset by analyzing the distribution of distances.
+High‑level orchestrator that learns to predict the maximum achievable accuracy of a DR technique from dataset‑level complexity metrics and then performs guided hyper‑parameter optimization.
 
 ```python
-def pairwise_distance_shift(data: np.ndarray) -> float:
+DatasetAdaptiveDR(
+    dr_techniques: List[str],
+    dr_metric: str,
+    dr_metric_names: List[str],
+    params: Dict[str, Any],
+    is_higher_better: bool,
+    init_points: int,
+    n_iter: int,
+    complexity_metric: str,
+    training_info: Dict[str, Any] = {
+        "single_task_time": 30,
+        "total_task_time": 600,
+        "memory_limit": 10000,
+        "cv_fold": 5,
+    },
+)
 ```
 
-- Parameters
-  - `data (numpy array)`: A numpy array of shape `(n_samples, n_features)` representing the high-dimensional data.
-- Returns
-  - `float`: The pairwise distance shift value.
+| Argument            | Type        | Description                                                                                                                    |
+| ------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `dr_techniques`     | list of str | Subset of supported DR algorithms (`"pca"`, `"umap"`, `"tsne"`, `"umato"`, `"lle"`, `"isomap"`).                               |
+| `dr_metric`         | str         | Evaluation metric used during opti‑ization (`"tn` wrapper with early termination.`c"`, `"mrre"`, `"l_tnc"`, `"srho"`, `"pr"`). |
+| `dr_metric_names`   | list of str | Names of the metrics to report for each DR technique.                                                                          |
+| `params`            | dict        | Search space definition for each DR technique.                                                                                 |
+| `is_higher_better`  | bool        | Whether a larger metric value indicates better quality.                                                                        |
+| `init_points`       | int         | Initial random trials before Bayesian optimization.                                                                            |
+| `n_iter`            | int         | Number of optimization iterations.                                                                                             |
+| `complexity_metric` | str         | Complexity metric to use (`"mnc"`, `"pds"`, `"pdsmnc"`, `"in`Dataset-Adaptive Workflow`tdim_proj"`, `"intdim_geo"`).           |
+| `training_info`     | dict        | Runtime / memory budget and cross‑validation settings for the internal learner.                                                |
 
+**Key methods**
 
-> **Example**
-> ```python
-> from pairwise_distance_shift import pairwise_distance_shift
-> import numpy as np
->
-> # Example data
->data = np.random.rand(100, 5)
->
-> # Compute pairwise distance shift
-> shift_value = pairwise_distance_shift(data)
-> print(f"Pairwise Distance Shift: {shift_value}")
-> ```
+| Method                                      | Returns            | Purpose                                                                                                                            |
+| ------------------------------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `add_dataset(data, labels=None)`            | –                  | Adds a dataset, computes its complexity score(s) and its maximum achievable accuracy per DR technique.                             |
+| `fit()`                                     | –                  | Trains a regression model (one per DR technique) that maps complexity metrics to accuracy.                                         |
+| `predict(data)`                             | `Dict[str, float]` | Predicts the achievable accuracy of each DR technique on an unseen dataset.                                                        |
+| `predict_opt(data, top_num=1, labels=None)` | `(scores, params)` | Performs guided hyper‑parameter search on the best‑predicted `top_num` techniques and returns their optimized scores & parameters. |
 
+---
 
-#### MNC (Mutual Neighbor Consistency)
+#### `mutual_neighbor_consistency` (`mnc`)
 
-The `mutual_neighbor_consistency` function computes a complexity metric targeting the local structure of high-dimensional data. It evaluates the consistency of mutual neighbors within the dataset using k-nearest neighbors (kNN) and shared nearest neighbors (SNN) concepts.
+Local‑structure complexity metric measuring how consistently *k*‑nearest‑neighbor relationships are preserved among shared nearest neighbors.
 
 ```python
-def mutual_neighbor_consistency(data: np.ndarray, k: int) -> float:
+a = mutual_neighbor_consistency(data: np.ndarray, k: int) -> float
 ```
 
-- Parameters
-	- `data (numpy array)`: A numpy array of shape `(n_samples, n_features)` representing the high-dimensional data.
-	- `k (int)`: The number of neighbors to consider.
+| Parameter | Type                                     | Description                              |
+| --------- | ---------------------------------------- | ---------------------------------------- |
+| `data`    | `np.ndarray` *(n\_samples, n\_features)* | High‑dimensional dataset.                |
+| `k`       | int                                      | Number of nearest neighbors to consider. |
 
-- Returns
-	- `float`: The mutual neighbor consistency value.
+Returns a single scalar between 0 and 1 (higher means more consistent neighborhood structure, i.e., *easier* for DR).
 
-> **Example**
-> ```python
-> from mutual_neighbor_consistency import mutual_neighbor_consistency
-> import numpy as np
+---
+
+#### `pairwise_distance_shift` (`pds`)
+
+Global‑structure complexity metric capturing how much the distribution of pairwise distances deviates from uniformity.
+
+```python
+s = pairwise_distance_shift(data: np.ndarray) -> float
+```
+
+| Parameter | Type                                     | Description               |
+| --------- | ---------------------------------------- | ------------------------- |
+| `data`    | `np.ndarray` *(n\_samples, n\_features)* | High‑dimensional dataset. |
+
+Returns a scalar; larger values indicate more homogeneous distance distribution (hence *harder* for DR).
+
+
+
+---
+
+### Reproducing Experiment 1: Validating the Structural Complexity Metrics
+
+The **`exp/exp1_metrics`** folder contains the full pipeline for Experiment 1 in the paper: assessing whether PDS and MNC (and their combinations) are reliable predictors of dataset reducibility.
+
+> **Quick start** – assuming your environment is activated and `python -m pip install -r requirements.txt` (or the `conda` environment above) has been executed:
 >
-> # Example data
-> data = np.random.rand(100, 5)
+> ```bash
+> # 1 – Generate ground‑truth maximum accuracy for every dataset / DR technique / DR metric
+> python3 -m exp.exp1_metrics.01_generate_ground_truth
 >
-> # Compute mutual neighbor consistency
-> consistency_value = mutual_neighbor_consistency(data, k=5)
-> print(f"Mutual Neighbor Consistency: {consistency_value}")
+> # 2 – Compute structural‑complexity metrics (MNC, PDS, intrinsic‑dim)
+> python3 -m exp.exp1_metrics.02_compute_metrics
+>
+> # 3 – Train regression models that map complexity metrics → ground truth, saving R² scores
+> python3 -m exp.exp1_metrics.03_train
+>
+> # 4 – Print summary tables (scalability + accuracy)
+> python3 -m exp.exp1_metrics.04_print
 > ```
+>
+> **Tip** : `02_compute_metrics.py` selects a CUDA device via `cuda.select_device(1)`. Change the index to match your GPU setup, or comment the line out for CPU execution.
 
+#### Configuration
 
-## Reproducing the Experiments
+All scripts read a single configuration file via `exp/load_config.py`. Edit `exp/config.json` (or the file your fork uses) to point to your datasets and tweak hyper‑parameters:
 
-The following are the steps to reproduce the experiments in the paper.
-The experiments produce the raw data file that is used to generate the tables and figures in the paper. 
+| Key | Purpose |
+| --- | ------- |
+| `DATASET_PATH` | Root folder containing raw datasets (each in its own sub‑folder). |
+| `MAX_POINTS` | Maximum number of points to sample from each dataset for faster experiments. |
+| `DR` | List of DR techniques to evaluate (`["pca", "umap", ...]`). |
+| `METRICS` | List of DR evaluation metrics, each with `id`, `names`, `params`, `is_higher_better`. |
+| `INIT_POINTS`, `MAX_ITER` | Bayesian‑optimization budget for ground‑truth search. |
+| `REGRESSION_ITER` | Number of shuffles / restarts when cross‑validating regression models. |
 
+#### Expected output structure
 
-### Setup 
+After the four scripts complete, the directory tree will look like:
 
-To set up the repository, follow these steps:
-
-1. Download and cleanup datasets
-	- Already provided in the repository (for the review process). 
-
-2. Create two virtual environments:
-	- For the main requirements:
-		```bash
-		conda create -n reducibility-main python==3.9.0
-		conda activate reducibility-main
-		pip install -r requirements.txt
-		```
-
-	- For the auto-sklearn requirements (needs separated environment due to dependency issue in auto-sklearn):
-		```bash
-		conda create -n reducibility-autosklearn python==3.9.18
-		conda activate reducibility-autosklearn
-		pip install -r requirements-autosklearn.txt
-		```
-
-
-
-conda create -n reducibility-autosklearn-3 -c conda-forge python==3.8.0 auto-sklearn numpy bayesian-optimization umap-learn
-
-### Main Experiments
-
-Run every codes under the `src` directory. The experiments are divided into three parts: approximation of ground truth structural reducibility, correlation/efficiency analysis, and use cases. 
-
-#### 1. Approximation of the Ground Truth Structural Reducibility of Datasets
-Generate the ground truth by navigating to the `ground_truth` directory and running the script:
-```bash
-conda activate reducibility-main
-python3 -m ground_truth._ground_truth
 ```
-See `src/ground_truth/result` directory to check whether the files are generated. Here, the approximated ground truth of each dataset computed by each DR evaluation metric (`tnc`, `mrre`, `l-tnc`, `srho`, `pr`) can be obtained by finding the maximum `score` of each dataset achievable across all DR techniques.
-
-#### 2. Correlation Analysis
-
-Evaluate the correlation of PDS and MNC scores with ground truth structural reducibility. This result is needed for further experiments and applications. 
-
-**(Step 1)** The evaluation starts by running the following script to apply the reducibility metrics and baselines to the datasets:
-```bash
-python3  -m exp.01_run_metrics.py
-```
-Ensure the `src/exp/scores/` directory and its subdirectories are properly generated.
-
-
-**(Step 2)** Run the script to check how well the reducibility metrics and baselines correlate with the ground truth:
-```bash
-python3  -m exp.02_accuracy.py
-```
-Check `exp/results` directory to check whether the `correlation.csv` file is prperly generated.
-
-
-**(Result and Discussion)**
-The below table shows the result of this experiment. Pds and Mnc well explain global and local structural reducibility, respectively, outperforming intrinsic dimensionality metrics. Their ensemble (Pds+Mnc) achieves the best correlation with all types of structural reducibility.
-<p align="center">    
-<img src="figs/Table1.png" style="width: 50%; height: auto;"/>
-</p>
-
-
-#### 2. Efficinecy Analysis
-
-This evaluation is conducted to evaluate the speed of our structural reducibility metrics.
-We reuse the time measurement done while executing the previous experiment. The below script's functionality is to aggregate the time measurements as a single file.
-
-```bash
-python3 -m exp.03_time.py
-```
-Please check the `exp/results` directory to see whether the `time.csv` file is properly generated.
-
-**(Result and Discussion)**
-The below figure illustrates the result. As in the figure, Pds and Mnc are slower than the projection-based intrinsic dimensionality metric but are faster than other baselines. 
-
-<p align="center">    <img src="figs/Figure1.png" style="width: 50%; height: auto;"/>
-</p>
-
-### Experiments for validating the Applicability of our Metrics on Use Cases
-
-#### Use case 1: Guiding DR Optimization with Structural Reducibility Metrics
-
-The following scripts are used to evaluate the efficiency of our metrics in guiding DR optimization (use case 1)
-
-**(Step 1: Predicting Maximum Accuracy of DR Techniques)** Run the following code to run the script. 
-
-**Warning**: Activate the `reducibility-autosklearn` conda environment to run this.
-
-```bash
-conda activate reducibility-autosklearn
-python3 -m app.01_01_prediction
+exp/exp1_metrics/results/
+ ├─ ground_truth/<dr_tech>/<dr_metric>/<dataset>.json   # step 1
+ ├─ metrics/                                           # step 2
+ │    ├─ mnc_25.json  mnc_50.json  mnc_75.json
+ │    ├─ pds.json
+ │    ├─ geometric_intdim.json
+ │    └─ projection_intdim.json
+ └─ final/                                             # step 3
+      ├─ correlations.csv   # R² per (ground‑truth metric × competitor × regressor)
+      └─ runtime.csv        # (optional, if you store runtimes separately)
 ```
 
-The script will save the predicted tnc results in the `app/results/predicted_tnc/` directory.
+Running **`04_print.py`** will summarise:
 
-<!-- **(Step 2: Checking te -->
+* **Scalability** – mean ± std runtime for each complexity metric and the exhaustive DR‑ensemble baseline.
+* * **Accuracy** – R² scores showing how well each complexity metric (competitor) predicts ground‑truth structural complexity under five regression models (linear, polynomial, KNN, random forest, gradient boosting).
 
-**(Step 2: Enhancing Efficiency of DR Optimization)** 
+Feel free to adapt the configuration or extend the scripts to reproduce additional experiments reported in the paper.
 
-**Warning**: Switch back to the `reducibility-main` conda environment to run this.
 
-```bash
-conda activate reducibility-main
-python3 -m app.01_02_optimization
+---
+
+### Reproducing Experiment 2: Assessing the Dataset‑Adaptive Workflow
+
+The **`exp/exp2_metrics_workflow`** folder evaluates whether the structural‑complexity metrics are *useful* inside the full Dataset‑Adaptive workflow.
+
+> **Quick start**
+>
+> ```bash
+> # 1 – Run the end‑to‑end evaluation (training, prediction, early‑stopping analysis)
+> python3 -m exp.exp2_metrics_workflow.01_evaluate
+>
+> # 2 – Print consolidated results (accuracy, recommendation quality, scalability)
+> python3 -m exp.exp2_metrics_workflow.02_print
+> ```
+>
+> The script will iterate over three complexity metric and baseline configurations (`pdsmnc`, `intdim_proj`, `intdim_geo`) and every DR evaluation metric defined in your `exp/config.json`.
+
+#### What is measured?
+
+| Aspect | Output file(s) | Meaning |
+| ------ | -------------- | ------- |
+| **Predictive Power** | `exp1_correlations.json` | R² between predicted and ground‑truth maximum accuracy for each DR technique. |
+| **Recommendation Quality** | `exp2_top_1_accuracy.json`, `exp2_top_3_accuracy.json` | Fraction of test datasets where the true best (top‑1) or any of the true top‑3 DR techniques appear in the model’s recommendations. |
+| **Effectiveness of Early Termination** | `exp3_opt_time.json`, `exp3_gt_time.json`, `exp3_opt_score.json`, `exp3_gt_score.json` | Runtime speed‑up achieved by early termination (opt/gt) and the corresponding quality ratio (opt_score/gt_score). |
+
+#### Expected output structure
+
+```
+exp/exp2_metrics_workflow/results/prediction/
+  ├─ <complexity_metric>/
+  │    └─ <dr_metric_id>/
+  │         ├─ exp1_correlations.json   # Accuracy
+  │         ├─ exp2_top_1_accuracy.json # Recommendation Quality
+  │         ├─ exp2_top_3_accuracy.json
+  │         ├─ exp3_opt_time.json      # Scalability
+  │         ├─ exp3_gt_time.json
+  │         ├─ exp3_opt_score.json
+  │         └─ exp3_gt_score.json
 ```
 
-The script will produce the results of optimization (time and final accuracy) of each dataset in the `app/optimization/` directory. 
+Running **`02_print.py`** will summarise all three aspects for every (complexity‑metric × DR‑metric) pair in a concise console report.
 
-Note that `01_03_aggregate.py` script is used to aggregate the results of the optimization to draw the results as figures using R. This will make `app1_results.csv` file in the `results/` directory.
-
-
-**(Result and Discussion)**
-The results indicate that interrupting iterations based on estimated optimal scores exhibit a substantial reduction in execution time compared to running optimization with a fixed number of iterations.
-
-<p align="center">    <img src="figs/Table2.png" style="width: 50%; height: auto;"/>
-</p>
-<p align="center">    <img src="figs/Figure2.png" style="width: 50%; height: auto;"/>
-</p>
+Adjust the configuration parameters (`TRAINING_SIZE`, `TEST_SIZE`, `TRAINING_INFO`, etc.) in `exp/config.json` to match your computational budget or experimental goals.
 
 
-#### Use case 2: Improving the Replicability of DR Benchmarks
+---
 
+### Reproducing Experiment 3: Comparing the Dataset‑Adaptive and Conventional Workflows
 
-The followings are the scripts to evaluate the replicability of DR benchmarks guided by our metrics (use case 2). The first script is used to execute the evaluation, and the second script is used to aggregate the results as a single file.
+The **`exp/exp3_workflow_comparison`** folder asks a holistic question: *Does the Dataset‑Adaptive workflow actually outperform the conventional brute‑force approach in practice?*
 
-```bash
-python3 -m app.02_01_evaluation 
-python3 -m app.02_02_aggregate
+> **Quick start**
+>
+> ```bash
+> # 1 – Evaluate the Dataset‑Adaptive workflow (Top‑1 / Top‑3 recommendations from Dataset-adaptive DR) against the ground‑truth baseline
+> python3 -m exp.exp3_workflow_comparison.01_evaluate
+>
+> # 2 – Print aggregated statistics (accuracy + scalability)
+> python3 -m exp.exp3_workflow_comparison.02_print
+> ```
+>
+> The script fixes the complexity‑metric configuration to **`pdsmnc`**—the best performer from Experiment 2—and iterates over every DR evaluation metric defined in `exp/config.json`.
+
+#### What is measured?
+
+| Aspect | Metric | Output file(s) | Meaning |
+| ------ | ------ | -------------- | ------- |
+| **Accuracy** | Projection score | `top1_scores.json`, `top3_scores.json`, `gt_scores.json` | Best score obtained by the Top‑1 / Top‑3 Dataset‑Adaptive recommendations vs. the exhaustive ground‑truth search. |
+| **Scalability** | Optimization time (s) | `top1_times.json`, `top3_times.json`, `gt_times.json` | Wall‑clock time required to reach the above scores. |
+
+#### Expected output structure
+
+```
+exp/exp3_workflow_comparison/results/
+  └─ <dr_metric_id>/
+       ├─ top1_scores.json   # list[dict]
+       ├─ top1_times.json    # list[float]
+       ├─ top3_scores.json   # list[dict]
+       ├─ top3_times.json    # list[float]
+       ├─ gt_scores.json     # list[float]
+       └─ gt_times.json      # list[float]
 ```
 
-The script will produce the evaluation results in the `app/results/` directory.
+Running **`02_print.py`** summarises, for each DR evaluation metric, the mean ± std of projection scores and optimization times across datasets:
 
-**(Result and Discussion)**
-Table 3 depicts the results. 
+* **Top‑1 workflow** – using only the single highest‑ranked technique predicted by the model.
+* **Top‑3 workflow** – taking the best score among the three techniques predicted by the model.
+* **Ground‑truth (conventional)** – exhaustive optimization over *all* DR techniques.
 
-<p align="center">    <img src="figs/Table3.png" style="width: 50%; height: auto;"/>
-</p>
+These numbers reveal both the quality retained by the Dataset‑Adaptive recommendations and the speed‑up they provide over brute‑force search.
 
