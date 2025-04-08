@@ -18,16 +18,11 @@ In this repository, we provide the implementation of two structural complexity m
 
 ### Requirements
 
-- Python 3.8+
-- Numpy
-- Scipy
-- Numba
+Python 3.9.5 or higher (we recommend toe use Python 3.9.5 for reproducing the experiments).
 
 The requirements can be automatically installed by running
 ```bash
-conda create -n complexity python==3.9.0
-conda activate complexity
-pip install -r requirements.txt
+conda create --name complexity --file python==3.9.5 
 ```
 
 
@@ -76,7 +71,7 @@ Measures the normalized dispersion of pairwise distances using a log-ratio of st
 **Returns**
 - `float`: Pairwise distance shift value (higher means more globally structured).
 
-여기까지 완료
+
 --------
 
 
