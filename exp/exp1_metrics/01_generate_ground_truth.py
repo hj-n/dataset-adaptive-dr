@@ -91,8 +91,3 @@ for ii, dr_technique in enumerate(DR_TECHNIQUES):
 			with open(f"exp/exp1_metrics/results/ground_truth/{dr_technique}/{dr_metric_info['id']}/{dataset_name}.json", "w") as f:
 				json.dump(results, f)
 
-
-
-
-## 2단계: 각 데이터셋에 대해, structural complexity를 계산한다. 
-
