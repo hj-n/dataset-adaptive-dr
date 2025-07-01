@@ -272,3 +272,39 @@ Running **`02_print.py`** summarises, for each DR evaluation metric, the mean 
 
 These numbers reveal both the quality retained by the Dataset‑Adaptive recommendations and the speed‑up they provide over brute‑force search.
 
+---
+
+### Reproducing Experiment in Appendix D: Scalability Analysis
+
+The **`exp/exp4_scalability`** folder evaluates the computational efficiency of the structural complexity metrics (MNC and PDS) compared to actual dimensionality reduction techniques across different dataset sizes.
+
+> **Quick start**
+>
+> ```bash
+> # Run scalability benchmarking on large datasets
+> python3 -m exp.exp4_scalability.00_compute
+> ```
+>
+> This experiment uses three large datasets (KDD Cup 99, Forest Cover Type, and RCV1) and measures runtime performance across varying sample sizes from 0.5% to 10% of each dataset.
+
+#### What is measured?
+
+The experiment compares the execution time of:
+- **Structural complexity metrics**: MNC (k=25) and PDS
+- **DR techniques**: UMAP, t-SNE, and UMATO
+
+For each dataset and sample size, the experiment runs 5 trials to ensure statistical reliability of the timing measurements.
+
+#### Expected output structure
+
+```
+exp/exp4_scalability/results/
+ ├─ times_covtype.json     # Runtime data for Forest Cover Type dataset
+ ├─ times_kddcup99.json    # Runtime data for KDD Cup 99 dataset
+ └─ times_rcv1.json        # Runtime data for RCV1 dataset
+```
+
+Each JSON file contains runtime arrays for each method (`mnc`, `pds`, `umap`, `tsne`, `umato`) along with the corresponding dataset `percentages` used for sampling.
+
+**Note**: The script automatically filters out categorical features from the KDD Cup 99 dataset and selects GPU device 1 for CUDA operations. Modify line 10 in `00_compute.py` to change the GPU device or comment it out for CPU execution.
+
